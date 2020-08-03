@@ -15,6 +15,7 @@
     "apollo-link-context": "^1.0.20",
     "apollo-link-http": "^1.5.17",
     "cookie": "^0.4.1",
+    "formik": "^2.1.5",
     "graphql": "^15.3.0",
     "isomorphic-unfetch": "^3.0.0",
     "next": "latest",

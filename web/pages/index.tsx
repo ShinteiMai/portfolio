@@ -1,8 +1,5 @@
 import Link from "next/link";
 import Layout from "../components/Layout";
-import { Mutation } from "react-apollo";
-import { gql } from "apollo-boost";
-import { loginMutation } from "../graphql/user/mutations/login";
 import { LoginComponent } from "../generated/apolloComponents";
 
 const IndexPage = () => (
