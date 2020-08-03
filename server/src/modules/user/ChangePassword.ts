@@ -1,4 +1,4 @@
-import { Mutation, Arg, Ctx } from "type-graphql";
+import { Mutation, Arg, Ctx, Resolver } from "type-graphql";
 import { User } from "../../entity/User";
 import { ChangePasswordInput } from "./changePassword/changePasswordInput";
 import { forgotPasswordPrefix } from "../../constants/confirmationPrefix";
@@ -6,6 +6,7 @@ import { redis } from "../../redis";
 import bcrypt from "bcryptjs";
 import { Context } from "../../types/Context";
 
+@Resolver()
 export class ChangePasswordResolver {
   @Mutation(() => User, { nullable: true })
   async changePassword(

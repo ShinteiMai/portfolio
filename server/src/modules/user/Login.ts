@@ -1,9 +1,10 @@
-import { Mutation, Arg, Ctx } from "type-graphql";
+import { Mutation, Arg, Ctx, Resolver } from "type-graphql";
 import { User } from "../../entity/User";
 import { LoginInput } from "./login/LoginInput";
 import bcrypt from "bcryptjs";
 import { Context } from "../../types/Context";
 
+@Resolver()
 export class LoginResolver {
   @Mutation(() => User, { nullable: true })
   async login(

@@ -1,7 +1,8 @@
-import { Mutation, Arg } from "type-graphql";
+import { Mutation, Arg, Resolver } from "type-graphql";
 import { redis } from "../../redis";
 import { User } from "../../entity/User";
 
+@Resolver()
 export class ConfirmUserResolver {
   @Mutation(() => Boolean)
   async confirmUser(@Arg("token") token: string): Promise<Boolean> {
