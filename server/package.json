@@ -6,6 +6,7 @@
   "dependencies": {
     "apollo-server-express": "^2.16.1",
     "bcryptjs": "^2.4.3",
+    "class-validator": "^0.12.2",
     "express": "^4.17.1",
     "graphql": "^15.3.0",
     "pg": "^8.3.0",
@@ -20,9 +21,10 @@
     "@types/node": "^14.0.27",
     "nodemon": "^2.0.4",
     "ts-node": "^8.10.2",
+    "ts-node-dev": "^1.0.0-pre.56",
     "typescript": "^3.9.7"
   },
   "scripts": {
-    "start": "nodemon --exec ts-node src/index.ts"
+    "start": "ts-node-dev --no-notify --respawn src/index.ts"
   }
 }

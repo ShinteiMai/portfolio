@@ -1,11 +1,11 @@
 import "reflect-metadata";
 
 import { ApolloServer } from "apollo-server-express";
-import * as Express from "express";
+import Express from "express";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 
-import { RegisterResolver } from "./modules/user/register";
+import { RegisterResolver } from "./modules/user/Register";
 
 const main = async () => {
   await createConnection();
@@ -14,7 +14,9 @@ const main = async () => {
     resolvers: [RegisterResolver],
   });
 
-  const apolloServer = new ApolloServer({ schema });
+  const apolloServer = new ApolloServer({
+    schema,
+  });
 
   const app = Express();
 
