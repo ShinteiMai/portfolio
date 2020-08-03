@@ -12,12 +12,18 @@ import { redis } from "./redis";
 import cors from "cors";
 import { LoginResolver } from "./modules/user/Login";
 import { MeResolver } from "./modules/user/Me";
+import { ConfirmUserResolver } from "./modules/user/ConfirmUser";
 
 const main = async () => {
   await createConnection();
 
   const schema = await buildSchema({
-    resolvers: [RegisterResolver, LoginResolver, MeResolver],
+    resolvers: [
+      RegisterResolver,
+      LoginResolver,
+      MeResolver,
+      ConfirmUserResolver,
+    ],
   });
 
   const apolloServer = new ApolloServer({
@@ -52,6 +58,7 @@ const main = async () => {
   );
 
   apolloServer.applyMiddleware({ app });
+
   app.listen(4000, () => {
     console.log(`Server started on http://localhost:4000/graphql`);
   });
