@@ -82,6 +82,16 @@ export type MutationRegisterArgs = {
   data: RegisterInput;
 };
 
+export type ConfirmUserMutationVariables = Exact<{
+  token: Scalars['String'];
+}>;
+
+
+export type ConfirmUserMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'confirmUser'>
+);
+
 export type LoginMutationVariables = Exact<{
   email: Scalars['String'];
   password: Scalars['String'];
@@ -110,6 +120,33 @@ export type RegisterMutation = (
 );
 
 
+export const ConfirmUserDocument = gql`
+    mutation ConfirmUser($token: String!) {
+  confirmUser(token: $token)
+}
+    `;
+export type ConfirmUserMutationFn = ApolloReactCommon.MutationFunction<ConfirmUserMutation, ConfirmUserMutationVariables>;
+export type ConfirmUserComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<ConfirmUserMutation, ConfirmUserMutationVariables>, 'mutation'>;
+
+    export const ConfirmUserComponent = (props: ConfirmUserComponentProps) => (
+      <ApolloReactComponents.Mutation<ConfirmUserMutation, ConfirmUserMutationVariables> mutation={ConfirmUserDocument} {...props} />
+    );
+    
+export type ConfirmUserProps<TChildProps = {}, TDataName extends string = 'mutate'> = {
+      [key in TDataName]: ApolloReactCommon.MutationFunction<ConfirmUserMutation, ConfirmUserMutationVariables>
+    } & TChildProps;
+export function withConfirmUser<TProps, TChildProps = {}, TDataName extends string = 'mutate'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  ConfirmUserMutation,
+  ConfirmUserMutationVariables,
+  ConfirmUserProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withMutation<TProps, ConfirmUserMutation, ConfirmUserMutationVariables, ConfirmUserProps<TChildProps, TDataName>>(ConfirmUserDocument, {
+      alias: 'confirmUser',
+      ...operationOptions
+    });
+};
+export type ConfirmUserMutationResult = ApolloReactCommon.MutationResult<ConfirmUserMutation>;
+export type ConfirmUserMutationOptions = ApolloReactCommon.BaseMutationOptions<ConfirmUserMutation, ConfirmUserMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(data: {email: $email, password: $password}) {
