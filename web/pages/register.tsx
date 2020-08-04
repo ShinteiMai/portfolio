@@ -3,6 +3,7 @@ import { Formik, Field } from "formik";
 import Layout from "../components/Layout";
 import { InputField } from "../components/fields/InputField";
 import { RegisterComponent } from "../generated/apolloComponents";
+import { useRouter } from "next/router";
 
 const Register = () => {
   return (
@@ -20,6 +21,8 @@ const Register = () => {
                   },
                 });
                 console.log(response);
+                const router = useRouter();
+                router.push("/check-email");
               } catch (err) {
                 const errors: { [key: string]: string } = {};
 

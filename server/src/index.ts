@@ -36,7 +36,7 @@ const main = async () => {
       store: new RedisStore({
         client: redis,
       }),
-      name: "qi",
+      name: "qid",
       secret: "asdasdasdasd",
       resave: false,
       saveUninitialized: false,

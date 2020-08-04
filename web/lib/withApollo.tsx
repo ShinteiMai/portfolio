@@ -42,7 +42,7 @@ export default (App: any) => {
         appProps = await App.getInitialProps(ctx);
       }
 
-      if (res & res.finished) {
+      if (res && res.finished) {
         return {};
       }
 
