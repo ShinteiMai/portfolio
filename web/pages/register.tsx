@@ -10,14 +10,31 @@ const Register = () => {
       <RegisterComponent>
         {(register) => (
           <Formik
-            onSubmit={async (data) => {
-              const response = await register({
-                variables: {
-                  data,
-                },
-              });
+            validateOnBlur={false}
+            validateOnChange={false}
+            onSubmit={async (data, { setErrors }) => {
+              try {
+                const response = await register({
+                  variables: {
+                    data,
+                  },
+                });
+                console.log(response);
+              } catch (err) {
+                const errors: { [key: string]: string } = {};
 
-              console.log(response);
+                err.graphQLErrors[0].extensions.exception.validationErrors.forEach(
+                  (validationErr: any) => {
+                    Object.values(validationErr.constraints).forEach(
+                      (message: any) => {
+                        errors[validationErr.property] = message;
+                      }
+                    );
+                  }
+                );
+
+                setErrors(errors);
+              }
             }}
             initialValues={{
               email: "",
