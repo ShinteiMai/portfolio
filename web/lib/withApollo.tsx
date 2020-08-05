@@ -6,8 +6,9 @@ import { getDataFromTree } from "react-apollo";
 import initApollo from "./initApollo";
 import { isBrowser } from "./isBrowser";
 import { NormalizedCacheObject, ApolloClient } from "apollo-boost";
+import redirect from "./redirect";
 
-const parseCookies = (req?: any, options = {}) => {
+export const parseCookies = (req?: any, options = {}) => {
   return cookie.parse(
     req ? req.headers.cookie || "" : document.cookie,
     options
@@ -57,7 +58,9 @@ export default (App: any) => {
             />
           );
         } catch (err) {
-          console.error("Error while running `getDataFromTree`", err);
+          if (err.message.includes("not authenticated")) {
+            redirect(ctx.ctx, "/login");
+          }
         }
 
         Head.rewind();

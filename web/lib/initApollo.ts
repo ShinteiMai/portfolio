@@ -24,6 +24,20 @@ const create = (initialState: any, { getToken }: Options) => {
     credentials: "include",
   });
 
+  // const errorLink = onError(({ graphQLErrors, networkError }) => {
+  //   if (graphQLErrors)
+  //     graphQLErrors.map(({ message, locations, path }) => {
+  //       console.log(
+  //         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+  //       );
+
+  //       if (message.includes("not authenticated")) {
+  //         Router.push("/login");
+  //       }
+  //     });
+  //   if (networkError) console.log(`[Network error]: ${networkError}`);
+  // });
+
   const authLink = setContext((_, { headers }) => {
     const token = getToken();
     return {

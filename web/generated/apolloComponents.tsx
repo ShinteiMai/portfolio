@@ -22,6 +22,7 @@ export type User = {
   lastName: Scalars['String'];
   email: Scalars['String'];
   name: Scalars['String'];
+  confirmed: Scalars['Boolean'];
 };
 
 export type ChangePasswordInput = {
@@ -119,6 +120,14 @@ export type RegisterMutation = (
   ) }
 );
 
+export type HelloQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HelloQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'hello'>
+);
+
 
 export const ConfirmUserDocument = gql`
     mutation ConfirmUser($token: String!) {
@@ -213,3 +222,28 @@ export function withRegister<TProps, TChildProps = {}, TDataName extends string 
 };
 export type RegisterMutationResult = ApolloReactCommon.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = ApolloReactCommon.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const HelloDocument = gql`
+    query Hello {
+  hello
+}
+    `;
+export type HelloComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<HelloQuery, HelloQueryVariables>, 'query'>;
+
+    export const HelloComponent = (props: HelloComponentProps) => (
+      <ApolloReactComponents.Query<HelloQuery, HelloQueryVariables> query={HelloDocument} {...props} />
+    );
+    
+export type HelloProps<TChildProps = {}, TDataName extends string = 'data'> = {
+      [key in TDataName]: ApolloReactHoc.DataValue<HelloQuery, HelloQueryVariables>
+    } & TChildProps;
+export function withHello<TProps, TChildProps = {}, TDataName extends string = 'data'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  HelloQuery,
+  HelloQueryVariables,
+  HelloProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withQuery<TProps, HelloQuery, HelloQueryVariables, HelloProps<TChildProps, TDataName>>(HelloDocument, {
+      alias: 'hello',
+      ...operationOptions
+    });
+};
+export type HelloQueryResult = ApolloReactCommon.QueryResult<HelloQuery, HelloQueryVariables>;
