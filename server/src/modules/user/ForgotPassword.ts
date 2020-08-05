@@ -17,7 +17,7 @@ export class ForgotPasswordResolver {
 
     await sendEmail(
       email,
-      `http://localhost:3000/user/change-password/${token}`
+      `http://localhost:3000/users/change-password/${token}`
     );
 
     return true;

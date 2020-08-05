@@ -27,6 +27,9 @@ const Layout = ({ children, title = "This is the default title" }: Props) => (
         <Link href="/register">
           <a>register</a>
         </Link>{" "}
+        <Link href="/forgot-password">
+          <a>forgot-password</a>
+        </Link>{" "}
         | <a href="/hello">hello</a>
       </nav>
     </header>
