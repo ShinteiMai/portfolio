@@ -1,4 +1,4 @@
-// import Link from "next/link";
+import Link from "next/link";
 import Layout from "../components/Layout";
 // import { LoginComponent } from "../generated/apolloComponents";
 
@@ -88,33 +88,22 @@ const IndexPage = () => (
 
     <div>
       <h1>Other projects that i've built</h1>
-      <a>Show all</a>
+      <Link href="/projects">
+        <a>Show all projects</a>
+      </Link>
       <div />
+    </div>
+
+    <div>
+      <h1>Get in Touch</h1>
+      <p>
+        Currently, I'm open for all opportunities and my inbox is always open to
+        everyone! If you have any questions just hit the button below and I'll
+        try my best to reply to you!
+      </p>
+      <button>Greet me</button>
     </div>
   </Layout>
 );
-
-// other
-//     <h1>Hello Next.js 👋</h1>
-//     <p>
-//       <Link href="/about">
-//         <a>About</a>
-//       </Link>
-
-//       <LoginComponent>
-//         {(mutate) => (
-//           <button
-//             onClick={async () => {
-//               const response = await mutate({
-//                 variables: { email: "test@test.com", password: "password" },
-//               });
-//               console.log(response);
-//             }}
-//           >
-//             Call Login Mutation
-//           </button>
-//         )}
-//       </LoginComponent>
-//     </p>
 
 export default IndexPage;
