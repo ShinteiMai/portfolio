@@ -5,7 +5,7 @@
   "port": 5432,
   "username": "postgres",
   "password": "",
-  "database": "next-graphql-db",
+  "database": "portfolio",
   "synchronize": true,
   "logging": true,
   "entities": ["src/entity/*.*"]
