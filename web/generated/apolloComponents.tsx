@@ -18,11 +18,7 @@ export type Scalars = {
 export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
-  firstName: Scalars['String'];
-  lastName: Scalars['String'];
-  email: Scalars['String'];
-  name: Scalars['String'];
-  confirmed: Scalars['Boolean'];
+  username: Scalars['String'];
 };
 
 export type ChangePasswordInput = {
@@ -31,7 +27,7 @@ export type ChangePasswordInput = {
 };
 
 export type LoginInput = {
-  email: Scalars['String'];
+  username: Scalars['String'];
   password: Scalars['String'];
 };
 
@@ -45,7 +41,6 @@ export type RegisterInput = {
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
-  hello?: Maybe<Scalars['String']>;
 };
 
 export type Mutation = {
@@ -55,7 +50,6 @@ export type Mutation = {
   forgotPassword: Scalars['Boolean'];
   login?: Maybe<User>;
   logout: Scalars['Boolean'];
-  register: User;
 };
 
 
@@ -78,11 +72,6 @@ export type MutationLoginArgs = {
   data: LoginInput;
 };
 
-
-export type MutationRegisterArgs = {
-  data: RegisterInput;
-};
-
 export type ChangePasswordMutationVariables = Exact<{
   data: ChangePasswordInput;
 }>;
@@ -92,7 +81,7 @@ export type ChangePasswordMutation = (
   { __typename?: 'Mutation' }
   & { changePassword?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'firstName' | 'lastName' | 'email' | 'name'>
+    & Pick<User, 'id' | 'username'>
   )> }
 );
 
@@ -117,7 +106,7 @@ export type ForgotPasswordMutation = (
 );
 
 export type LoginMutationVariables = Exact<{
-  email: Scalars['String'];
+  username: Scalars['String'];
   password: Scalars['String'];
 }>;
 
@@ -126,7 +115,7 @@ export type LoginMutation = (
   { __typename?: 'Mutation' }
   & { login?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'firstName' | 'lastName' | 'email' | 'name'>
+    & Pick<User, 'id' | 'username'>
   )> }
 );
 
@@ -138,27 +127,6 @@ export type LogoutMutation = (
   & Pick<Mutation, 'logout'>
 );
 
-export type RegisterMutationVariables = Exact<{
-  data: RegisterInput;
-}>;
-
-
-export type RegisterMutation = (
-  { __typename?: 'Mutation' }
-  & { register: (
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'firstName' | 'lastName' | 'email' | 'name'>
-  ) }
-);
-
-export type HelloQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type HelloQuery = (
-  { __typename?: 'Query' }
-  & Pick<Query, 'hello'>
-);
-
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -166,7 +134,7 @@ export type MeQuery = (
   { __typename?: 'Query' }
   & { me?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'firstName' | 'lastName' | 'email' | 'name'>
+    & Pick<User, 'id' | 'username'>
   )> }
 );
 
@@ -175,10 +143,7 @@ export const ChangePasswordDocument = gql`
     mutation ChangePassword($data: ChangePasswordInput!) {
   changePassword(data: $data) {
     id
-    firstName
-    lastName
-    email
-    name
+    username
   }
 }
     `;
@@ -259,13 +224,10 @@ export function withForgotPassword<TProps, TChildProps = {}, TDataName extends s
 export type ForgotPasswordMutationResult = ApolloReactCommon.MutationResult<ForgotPasswordMutation>;
 export type ForgotPasswordMutationOptions = ApolloReactCommon.BaseMutationOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
 export const LoginDocument = gql`
-    mutation Login($email: String!, $password: String!) {
-  login(data: {email: $email, password: $password}) {
+    mutation Login($username: String!, $password: String!) {
+  login(data: {username: $username, password: $password}) {
     id
-    firstName
-    lastName
-    email
-    name
+    username
   }
 }
     `;
@@ -318,72 +280,11 @@ export function withLogout<TProps, TChildProps = {}, TDataName extends string = 
 };
 export type LogoutMutationResult = ApolloReactCommon.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = ApolloReactCommon.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
-export const RegisterDocument = gql`
-    mutation Register($data: RegisterInput!) {
-  register(data: $data) {
-    id
-    firstName
-    lastName
-    email
-    name
-  }
-}
-    `;
-export type RegisterMutationFn = ApolloReactCommon.MutationFunction<RegisterMutation, RegisterMutationVariables>;
-export type RegisterComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<RegisterMutation, RegisterMutationVariables>, 'mutation'>;
-
-    export const RegisterComponent = (props: RegisterComponentProps) => (
-      <ApolloReactComponents.Mutation<RegisterMutation, RegisterMutationVariables> mutation={RegisterDocument} {...props} />
-    );
-    
-export type RegisterProps<TChildProps = {}, TDataName extends string = 'mutate'> = {
-      [key in TDataName]: ApolloReactCommon.MutationFunction<RegisterMutation, RegisterMutationVariables>
-    } & TChildProps;
-export function withRegister<TProps, TChildProps = {}, TDataName extends string = 'mutate'>(operationOptions?: ApolloReactHoc.OperationOption<
-  TProps,
-  RegisterMutation,
-  RegisterMutationVariables,
-  RegisterProps<TChildProps, TDataName>>) {
-    return ApolloReactHoc.withMutation<TProps, RegisterMutation, RegisterMutationVariables, RegisterProps<TChildProps, TDataName>>(RegisterDocument, {
-      alias: 'register',
-      ...operationOptions
-    });
-};
-export type RegisterMutationResult = ApolloReactCommon.MutationResult<RegisterMutation>;
-export type RegisterMutationOptions = ApolloReactCommon.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
-export const HelloDocument = gql`
-    query Hello {
-  hello
-}
-    `;
-export type HelloComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<HelloQuery, HelloQueryVariables>, 'query'>;
-
-    export const HelloComponent = (props: HelloComponentProps) => (
-      <ApolloReactComponents.Query<HelloQuery, HelloQueryVariables> query={HelloDocument} {...props} />
-    );
-    
-export type HelloProps<TChildProps = {}, TDataName extends string = 'data'> = {
-      [key in TDataName]: ApolloReactHoc.DataValue<HelloQuery, HelloQueryVariables>
-    } & TChildProps;
-export function withHello<TProps, TChildProps = {}, TDataName extends string = 'data'>(operationOptions?: ApolloReactHoc.OperationOption<
-  TProps,
-  HelloQuery,
-  HelloQueryVariables,
-  HelloProps<TChildProps, TDataName>>) {
-    return ApolloReactHoc.withQuery<TProps, HelloQuery, HelloQueryVariables, HelloProps<TChildProps, TDataName>>(HelloDocument, {
-      alias: 'hello',
-      ...operationOptions
-    });
-};
-export type HelloQueryResult = ApolloReactCommon.QueryResult<HelloQuery, HelloQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {
     id
-    firstName
-    lastName
-    email
-    name
+    username
   }
 }
     `;

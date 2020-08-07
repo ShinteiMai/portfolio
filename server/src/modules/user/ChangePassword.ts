@@ -1,7 +1,7 @@
 import { Mutation, Arg, Resolver } from "type-graphql";
 import { User } from "../../entity/User";
 import { ChangePasswordInput } from "./changePassword/changePasswordInput";
-import { forgotPasswordPrefix } from "../../constants/confirmationPrefix";
+import { forgotPasswordPrefix } from "../middlewares/constants/confirmationPrefix";
 import { redis } from "../../redis";
 import bcrypt from "bcryptjs";
 // import { Context } from "../../types/Context";

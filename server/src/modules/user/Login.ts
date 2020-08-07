@@ -8,15 +8,14 @@ import { Context } from "../../types/Context";
 export class LoginResolver {
   @Mutation(() => User, { nullable: true })
   async login(
-    @Arg("data") { email, password }: LoginInput,
+    @Arg("data") { username, password }: LoginInput,
     @Ctx() ctx: Context
   ): Promise<User | null> {
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { username } });
 
     if (!user) return null;
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) return null;
-    if (!user.confirmed) return null;
 
     ctx.req.session!.userId = user.id;
 

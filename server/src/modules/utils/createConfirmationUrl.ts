@@ -1,6 +1,6 @@
-import { redis } from "../redis";
+import { redis } from "../../redis";
 import { v4 as uuid } from "uuid";
-import { confirmUserPrefix } from "../constants/confirmationPrefix";
+import { confirmUserPrefix } from "../middlewares/constants/confirmationPrefix";
 
 export const createConfirmationUrl = async (userId: string) => {
   const id = uuid();

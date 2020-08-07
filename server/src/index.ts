@@ -6,11 +6,14 @@ import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import session from "express-session";
 import connectRedis from "connect-redis";
+import dotenv from "dotenv";
 
 import { redis } from "./redis";
 import cors from "cors";
+import { createBaseUser } from "./modules/utils/createBaseUser";
 
 const main = async () => {
+  dotenv.config();
   await createConnection();
 
   const schema = await buildSchema({
@@ -51,6 +54,7 @@ const main = async () => {
   apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(4000, () => {
+    createBaseUser();
     console.log(`Server started on http://localhost:4000/graphql`);
   });
 };
