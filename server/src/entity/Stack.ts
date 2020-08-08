@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  PrimaryColumn,
 } from "typeorm";
 import { ObjectType, Field } from "type-graphql";
 import { Project } from "./Project";
@@ -16,6 +17,10 @@ export class Stack extends BaseEntity {
   id: string;
 
   @Field()
+  @PrimaryColumn()
+  projectId: string;
+
+  @Field()
   @Column()
   name: string;
 
@@ -23,6 +28,6 @@ export class Stack extends BaseEntity {
   @Column()
   url: string;
 
-  @ManyToOne(() => Project, (project) => project.stacks)
+  @ManyToOne(() => Project, (project) => project.stacksConnection)
   project: Project;
 }

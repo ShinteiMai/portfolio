@@ -5,6 +5,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   ManyToOne,
+  PrimaryColumn,
 } from "typeorm";
 import { Project } from "./Project";
 
@@ -16,6 +17,10 @@ export class Link extends BaseEntity {
   id: string;
 
   @Field()
+  @PrimaryColumn()
+  projectId: string;
+
+  @Field()
   @Column()
   type: string;
 
@@ -23,6 +28,6 @@ export class Link extends BaseEntity {
   @Column()
   url: string;
 
-  @ManyToOne(() => Project, (project) => project.links)
+  @ManyToOne(() => Project, (project) => project.linksConnection)
   project: Project;
 }

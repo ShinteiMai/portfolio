@@ -24,9 +24,29 @@ export class Project extends BaseEntity {
   @Column()
   year: string;
 
-  @OneToMany(() => Stack, (stack) => stack.project)
-  stacks: Stack[];
+  @Field(() => [Stack])
+  async stacks() {
+    return await Stack.find({
+      relations: ["project"],
+      where: {
+        projectId: this.id,
+      },
+    });
+  }
 
-  @OneToMany(() => Link, (link) => link.project)
-  links: Link[];
+  @Field(() => [Link])
+  async links() {
+    return await Link.find({
+      relations: ["project"],
+      where: {
+        projectId: this.id,
+      },
+    });
+  }
+
+  @OneToMany(() => Stack, (stackConnection) => stackConnection.project)
+  stacksConnection: Stack[];
+
+  @OneToMany(() => Link, (linkConnection) => linkConnection.project)
+  linksConnection: Link[];
 }
