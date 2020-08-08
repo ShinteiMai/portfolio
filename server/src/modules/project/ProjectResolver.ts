@@ -1,34 +1,50 @@
 import { Resolver, Query, Mutation, Arg } from "type-graphql";
-import { StackInput } from "./Inputs/StackInput";
 import { LinkInput } from "./Inputs/LinkInput";
 import { Project } from "../../entity/Project";
 import { Stack } from "../../entity/Stack";
 import { Link } from "../../entity/Link";
+
+export const validateStacks = async (
+  stackIds: string[]
+): Promise<Stack[] | null> => {
+  const projectStacks: Stack[] = [];
+  for await (let id of stackIds) {
+    const validateStack = await Stack.findOne(id);
+    if (!validateStack) {
+      return null;
+    }
+    projectStacks.push(validateStack);
+  }
+  return projectStacks;
+};
+
 @Resolver()
 export class ProjectResolver {
-  @Mutation(() => Project, { nullable: false })
+  @Mutation(() => Project, { nullable: true })
   async createProject(
     @Arg("title") title: string,
     @Arg("year") year: string,
-    @Arg("stacks", () => [StackInput]) stacks: StackInput[],
+    @Arg("stacks", () => [String]) stacks: string[],
     @Arg("links", () => [LinkInput]) links: LinkInput[]
   ): Promise<Project | null> {
     try {
-      const project = await Project.create({ title, year });
+      const projectStacks = await validateStacks(stacks);
+      console.log(projectStacks);
+      if (projectStacks != null) {
+        const project = await Project.create({
+          title,
+          year,
+          stacks: projectStacks,
+        });
+        await project.save();
 
-      stacks.forEach(async (stack) => {
-        const newStack = await Stack.create({ ...stack });
-        newStack.project = project;
-        await newStack.save();
-      });
+        for await (let link of links) {
+          await Link.create({ ...link, project }).save();
+        }
 
-      links.forEach(async (link) => {
-        const newLink = await Link.create({ ...link });
-        newLink.project = project;
-        await newLink.save();
-      });
-      await Project.save(project);
-      return project;
+        return project;
+      }
+      return null;
     } catch (err) {
       return null;
     }
@@ -37,18 +53,16 @@ export class ProjectResolver {
   @Mutation(() => Project, { nullable: true })
   async deleteProject(@Arg("id") id: string): Promise<Project | null> {
     try {
-      const project = await Project.findOne(id);
+      const project = await Project.findOne(id, { relations: ["stacks"] });
       if (project) {
-        const stacks = await project.stacks();
         const links = await project.links();
-        stacks.forEach(async (stack) => {
-          await Stack.remove(stack);
-        });
-        links.forEach(async (link) => {
-          await Link.remove(link);
-        });
-        await Project.remove(project);
-        console.log(project);
+
+        for await (let link of links) {
+          await link.remove();
+        }
+
+        await project.remove();
+
         return project;
       } else {
         return null;
@@ -58,32 +72,47 @@ export class ProjectResolver {
     }
   }
 
-  // @Mutation(() => Project, { nullable: true })
-  // async updateProject(
-  //   @Arg("id") id: string,
-  //   @Arg("title") title: string,
-  //   @Arg("year") year: string,
-  //   @Arg("stacks", () => [StackInput]) stacks: StackInput[],
-  //   @Arg("links", () => [LinkInput]) links: LinkInput[]
-  // ): Promise<Project | null> {
-  //   try {
-  //     const project = Project.findOne(id);
-  //     if (project) {
-  //       const updatedProject = {
-  //         ...project,
-  //         title,
-  //         year,
-  //       };
-  //       const stacks = await project.stacks();
-  //     }
-  //   } catch (err) {
-  //     return null;
-  //   }
-  // }
+  @Mutation(() => Project, { nullable: true })
+  async updateProject(
+    @Arg("id") id: string,
+    @Arg("title") title: string,
+    @Arg("year") year: string,
+    @Arg("stacks", () => [String]) stacks: string[],
+    @Arg("links", () => [LinkInput]) links: LinkInput[]
+  ): Promise<Project | null> {
+    const projectStacks = await validateStacks(stacks);
+    if (projectStacks) {
+      const project = await Project.findOne(id, { relations: ["stacks"] });
+      console.log(project);
+      if (project) {
+        const projectLinks = await project.links();
+
+        project.title = title;
+        project.year = year;
+        project.stacks = projectStacks;
+
+        await project.save();
+
+        for await (let link of projectLinks) {
+          await Link.remove(link);
+        }
+
+        for await (let link of links) {
+          await Link.create({ ...link, project }).save();
+        }
+
+        return project;
+      } else {
+        return null;
+      }
+    }
+    return null;
+  }
 
   @Query(() => [Project], { nullable: true })
   async getProjects(): Promise<Project[] | null> {
-    const projects = await Project.find();
+    const projects = await Project.find({ relations: ["stacks"] });
+    console.log(projects);
     if (projects) {
       return projects;
     } else {
@@ -93,16 +122,11 @@ export class ProjectResolver {
 
   @Query(() => Project, { nullable: true })
   async getProject(@Arg("id") id: string): Promise<Project | null> {
-    const project = await Project.findOne(id);
+    const project = await Project.findOne(id, { relations: ["stacks"] });
     if (project) {
       return project;
     } else {
       return null;
     }
-  }
-
-  @Query(() => String)
-  async helloWorld() {
-    return "hello world!";
   }
 }

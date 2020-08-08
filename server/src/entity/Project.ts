@@ -5,6 +5,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from "typeorm";
 import { Link } from "./Link";
 import { Stack } from "./Stack";
@@ -24,16 +26,6 @@ export class Project extends BaseEntity {
   @Column()
   year: string;
 
-  @Field(() => [Stack])
-  async stacks() {
-    return await Stack.find({
-      relations: ["project"],
-      where: {
-        projectId: this.id,
-      },
-    });
-  }
-
   @Field(() => [Link])
   async links() {
     return await Link.find({
@@ -44,8 +36,10 @@ export class Project extends BaseEntity {
     });
   }
 
-  @OneToMany(() => Stack, (stackConnection) => stackConnection.project)
-  stacksConnection: Stack[];
+  @Field(() => [Stack])
+  @ManyToMany(() => Stack)
+  @JoinTable()
+  stacks: Stack[];
 
   @OneToMany(() => Link, (linkConnection) => linkConnection.project)
   linksConnection: Link[];
