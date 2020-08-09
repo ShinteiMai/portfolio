@@ -13,12 +13,49 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
   username: Scalars['String'];
+};
+
+export type Stack = {
+  __typename?: 'Stack';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  url: Scalars['String'];
+};
+
+export type Project = {
+  __typename?: 'Project';
+  id: Scalars['String'];
+  title: Scalars['String'];
+  year: Scalars['String'];
+  thumbnailUrl: Scalars['String'];
+  links: Array<Link>;
+  stacks: Array<Stack>;
+};
+
+export type Link = {
+  __typename?: 'Link';
+  id: Scalars['String'];
+  projectId: Scalars['String'];
+  type: Scalars['String'];
+  url: Scalars['String'];
+};
+
+export type LinkInput = {
+  type: Scalars['String'];
+  url: Scalars['String'];
+};
+
+export type StackInput = {
+  name: Scalars['String'];
+  url: Scalars['String'];
 };
 
 export type ChangePasswordInput = {
@@ -40,31 +77,90 @@ export type RegisterInput = {
 
 export type Query = {
   __typename?: 'Query';
+  getLinks: Array<Link>;
+  getProjects?: Maybe<Array<Project>>;
+  getProject?: Maybe<Project>;
+  getStacks: Array<Stack>;
   me?: Maybe<User>;
+};
+
+
+export type QueryGetProjectArgs = {
+  id: Scalars['String'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  changePassword?: Maybe<User>;
-  confirmUser: Scalars['Boolean'];
-  forgotPassword: Scalars['Boolean'];
+  createLink: Link;
+  deleteLink: Scalars['Boolean'];
+  updateLink: Scalars['Boolean'];
+  createProject?: Maybe<Project>;
+  deleteProject?: Maybe<Project>;
+  updateProject?: Maybe<Project>;
+  createStack: Stack;
+  deleteStack: Scalars['Boolean'];
+  updateStack?: Maybe<Scalars['Boolean']>;
   login?: Maybe<User>;
   logout: Scalars['Boolean'];
 };
 
 
-export type MutationChangePasswordArgs = {
-  data: ChangePasswordInput;
+export type MutationCreateLinkArgs = {
+  url: Scalars['String'];
+  type: Scalars['String'];
 };
 
 
-export type MutationConfirmUserArgs = {
-  token: Scalars['String'];
+export type MutationDeleteLinkArgs = {
+  id: Scalars['String'];
 };
 
 
-export type MutationForgotPasswordArgs = {
-  email: Scalars['String'];
+export type MutationUpdateLinkArgs = {
+  url: Scalars['String'];
+  type: Scalars['String'];
+  id: Scalars['String'];
+};
+
+
+export type MutationCreateProjectArgs = {
+  links: Array<LinkInput>;
+  stacks: Array<Scalars['String']>;
+  thumbnail: Scalars['Upload'];
+  year: Scalars['String'];
+  title: Scalars['String'];
+};
+
+
+export type MutationDeleteProjectArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationUpdateProjectArgs = {
+  links: Array<LinkInput>;
+  stacks: Array<Scalars['String']>;
+  year: Scalars['String'];
+  title: Scalars['String'];
+  id: Scalars['String'];
+};
+
+
+export type MutationCreateStackArgs = {
+  url: Scalars['String'];
+  name: Scalars['String'];
+};
+
+
+export type MutationDeleteStackArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationUpdateStackArgs = {
+  url: Scalars['String'];
+  name: Scalars['String'];
+  id: Scalars['String'];
 };
 
 
@@ -72,37 +168,43 @@ export type MutationLoginArgs = {
   data: LoginInput;
 };
 
-export type ChangePasswordMutationVariables = Exact<{
-  data: ChangePasswordInput;
+
+export type CreateProjectMutationVariables = Exact<{
+  title: Scalars['String'];
+  year: Scalars['String'];
+  thumbnail: Scalars['Upload'];
+  stacks: Array<Scalars['String']>;
+  links: Array<LinkInput>;
 }>;
 
 
-export type ChangePasswordMutation = (
+export type CreateProjectMutation = (
   { __typename?: 'Mutation' }
-  & { changePassword?: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
+  & { createProject?: Maybe<(
+    { __typename?: 'Project' }
+    & Pick<Project, 'id' | 'title' | 'year' | 'thumbnailUrl'>
+    & { stacks: Array<(
+      { __typename?: 'Stack' }
+      & Pick<Stack, 'id' | 'name' | 'url'>
+    )>, links: Array<(
+      { __typename?: 'Link' }
+      & Pick<Link, 'id' | 'type' | 'url'>
+    )> }
   )> }
 );
 
-export type ConfirmUserMutationVariables = Exact<{
-  token: Scalars['String'];
+export type CreateStackMutationVariables = Exact<{
+  name: Scalars['String'];
+  url: Scalars['String'];
 }>;
 
 
-export type ConfirmUserMutation = (
+export type CreateStackMutation = (
   { __typename?: 'Mutation' }
-  & Pick<Mutation, 'confirmUser'>
-);
-
-export type ForgotPasswordMutationVariables = Exact<{
-  email: Scalars['String'];
-}>;
-
-
-export type ForgotPasswordMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'forgotPassword'>
+  & { createStack: (
+    { __typename?: 'Stack' }
+    & Pick<Stack, 'id' | 'name' | 'url'>
+  ) }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -127,6 +229,17 @@ export type LogoutMutation = (
   & Pick<Mutation, 'logout'>
 );
 
+export type GetStacksQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetStacksQuery = (
+  { __typename?: 'Query' }
+  & { getStacks: Array<(
+    { __typename?: 'Stack' }
+    & Pick<Stack, 'id' | 'name' | 'url'>
+  )> }
+);
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -139,90 +252,79 @@ export type MeQuery = (
 );
 
 
-export const ChangePasswordDocument = gql`
-    mutation ChangePassword($data: ChangePasswordInput!) {
-  changePassword(data: $data) {
+export const CreateProjectDocument = gql`
+    mutation createProject($title: String!, $year: String!, $thumbnail: Upload!, $stacks: [String!]!, $links: [LinkInput!]!) {
+  createProject(title: $title, year: $year, thumbnail: $thumbnail, stacks: $stacks, links: $links) {
     id
-    username
+    title
+    year
+    thumbnailUrl
+    stacks {
+      id
+      name
+      url
+    }
+    links {
+      id
+      type
+      url
+    }
   }
 }
     `;
-export type ChangePasswordMutationFn = ApolloReactCommon.MutationFunction<ChangePasswordMutation, ChangePasswordMutationVariables>;
-export type ChangePasswordComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<ChangePasswordMutation, ChangePasswordMutationVariables>, 'mutation'>;
+export type CreateProjectMutationFn = ApolloReactCommon.MutationFunction<CreateProjectMutation, CreateProjectMutationVariables>;
+export type CreateProjectComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<CreateProjectMutation, CreateProjectMutationVariables>, 'mutation'>;
 
-    export const ChangePasswordComponent = (props: ChangePasswordComponentProps) => (
-      <ApolloReactComponents.Mutation<ChangePasswordMutation, ChangePasswordMutationVariables> mutation={ChangePasswordDocument} {...props} />
+    export const CreateProjectComponent = (props: CreateProjectComponentProps) => (
+      <ApolloReactComponents.Mutation<CreateProjectMutation, CreateProjectMutationVariables> mutation={CreateProjectDocument} {...props} />
     );
     
-export type ChangePasswordProps<TChildProps = {}, TDataName extends string = 'mutate'> = {
-      [key in TDataName]: ApolloReactCommon.MutationFunction<ChangePasswordMutation, ChangePasswordMutationVariables>
+export type CreateProjectProps<TChildProps = {}, TDataName extends string = 'mutate'> = {
+      [key in TDataName]: ApolloReactCommon.MutationFunction<CreateProjectMutation, CreateProjectMutationVariables>
     } & TChildProps;
-export function withChangePassword<TProps, TChildProps = {}, TDataName extends string = 'mutate'>(operationOptions?: ApolloReactHoc.OperationOption<
+export function withCreateProject<TProps, TChildProps = {}, TDataName extends string = 'mutate'>(operationOptions?: ApolloReactHoc.OperationOption<
   TProps,
-  ChangePasswordMutation,
-  ChangePasswordMutationVariables,
-  ChangePasswordProps<TChildProps, TDataName>>) {
-    return ApolloReactHoc.withMutation<TProps, ChangePasswordMutation, ChangePasswordMutationVariables, ChangePasswordProps<TChildProps, TDataName>>(ChangePasswordDocument, {
-      alias: 'changePassword',
+  CreateProjectMutation,
+  CreateProjectMutationVariables,
+  CreateProjectProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withMutation<TProps, CreateProjectMutation, CreateProjectMutationVariables, CreateProjectProps<TChildProps, TDataName>>(CreateProjectDocument, {
+      alias: 'createProject',
       ...operationOptions
     });
 };
-export type ChangePasswordMutationResult = ApolloReactCommon.MutationResult<ChangePasswordMutation>;
-export type ChangePasswordMutationOptions = ApolloReactCommon.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
-export const ConfirmUserDocument = gql`
-    mutation ConfirmUser($token: String!) {
-  confirmUser(token: $token)
+export type CreateProjectMutationResult = ApolloReactCommon.MutationResult<CreateProjectMutation>;
+export type CreateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateProjectMutation, CreateProjectMutationVariables>;
+export const CreateStackDocument = gql`
+    mutation createStack($name: String!, $url: String!) {
+  createStack(name: $name, url: $url) {
+    id
+    name
+    url
+  }
 }
     `;
-export type ConfirmUserMutationFn = ApolloReactCommon.MutationFunction<ConfirmUserMutation, ConfirmUserMutationVariables>;
-export type ConfirmUserComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<ConfirmUserMutation, ConfirmUserMutationVariables>, 'mutation'>;
+export type CreateStackMutationFn = ApolloReactCommon.MutationFunction<CreateStackMutation, CreateStackMutationVariables>;
+export type CreateStackComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<CreateStackMutation, CreateStackMutationVariables>, 'mutation'>;
 
-    export const ConfirmUserComponent = (props: ConfirmUserComponentProps) => (
-      <ApolloReactComponents.Mutation<ConfirmUserMutation, ConfirmUserMutationVariables> mutation={ConfirmUserDocument} {...props} />
+    export const CreateStackComponent = (props: CreateStackComponentProps) => (
+      <ApolloReactComponents.Mutation<CreateStackMutation, CreateStackMutationVariables> mutation={CreateStackDocument} {...props} />
     );
     
-export type ConfirmUserProps<TChildProps = {}, TDataName extends string = 'mutate'> = {
-      [key in TDataName]: ApolloReactCommon.MutationFunction<ConfirmUserMutation, ConfirmUserMutationVariables>
+export type CreateStackProps<TChildProps = {}, TDataName extends string = 'mutate'> = {
+      [key in TDataName]: ApolloReactCommon.MutationFunction<CreateStackMutation, CreateStackMutationVariables>
     } & TChildProps;
-export function withConfirmUser<TProps, TChildProps = {}, TDataName extends string = 'mutate'>(operationOptions?: ApolloReactHoc.OperationOption<
+export function withCreateStack<TProps, TChildProps = {}, TDataName extends string = 'mutate'>(operationOptions?: ApolloReactHoc.OperationOption<
   TProps,
-  ConfirmUserMutation,
-  ConfirmUserMutationVariables,
-  ConfirmUserProps<TChildProps, TDataName>>) {
-    return ApolloReactHoc.withMutation<TProps, ConfirmUserMutation, ConfirmUserMutationVariables, ConfirmUserProps<TChildProps, TDataName>>(ConfirmUserDocument, {
-      alias: 'confirmUser',
+  CreateStackMutation,
+  CreateStackMutationVariables,
+  CreateStackProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withMutation<TProps, CreateStackMutation, CreateStackMutationVariables, CreateStackProps<TChildProps, TDataName>>(CreateStackDocument, {
+      alias: 'createStack',
       ...operationOptions
     });
 };
-export type ConfirmUserMutationResult = ApolloReactCommon.MutationResult<ConfirmUserMutation>;
-export type ConfirmUserMutationOptions = ApolloReactCommon.BaseMutationOptions<ConfirmUserMutation, ConfirmUserMutationVariables>;
-export const ForgotPasswordDocument = gql`
-    mutation forgotPassword($email: String!) {
-  forgotPassword(email: $email)
-}
-    `;
-export type ForgotPasswordMutationFn = ApolloReactCommon.MutationFunction<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
-export type ForgotPasswordComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>, 'mutation'>;
-
-    export const ForgotPasswordComponent = (props: ForgotPasswordComponentProps) => (
-      <ApolloReactComponents.Mutation<ForgotPasswordMutation, ForgotPasswordMutationVariables> mutation={ForgotPasswordDocument} {...props} />
-    );
-    
-export type ForgotPasswordProps<TChildProps = {}, TDataName extends string = 'mutate'> = {
-      [key in TDataName]: ApolloReactCommon.MutationFunction<ForgotPasswordMutation, ForgotPasswordMutationVariables>
-    } & TChildProps;
-export function withForgotPassword<TProps, TChildProps = {}, TDataName extends string = 'mutate'>(operationOptions?: ApolloReactHoc.OperationOption<
-  TProps,
-  ForgotPasswordMutation,
-  ForgotPasswordMutationVariables,
-  ForgotPasswordProps<TChildProps, TDataName>>) {
-    return ApolloReactHoc.withMutation<TProps, ForgotPasswordMutation, ForgotPasswordMutationVariables, ForgotPasswordProps<TChildProps, TDataName>>(ForgotPasswordDocument, {
-      alias: 'forgotPassword',
-      ...operationOptions
-    });
-};
-export type ForgotPasswordMutationResult = ApolloReactCommon.MutationResult<ForgotPasswordMutation>;
-export type ForgotPasswordMutationOptions = ApolloReactCommon.BaseMutationOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
+export type CreateStackMutationResult = ApolloReactCommon.MutationResult<CreateStackMutation>;
+export type CreateStackMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateStackMutation, CreateStackMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($username: String!, $password: String!) {
   login(data: {username: $username, password: $password}) {
@@ -280,6 +382,35 @@ export function withLogout<TProps, TChildProps = {}, TDataName extends string = 
 };
 export type LogoutMutationResult = ApolloReactCommon.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = ApolloReactCommon.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export const GetStacksDocument = gql`
+    query getStacks {
+  getStacks {
+    id
+    name
+    url
+  }
+}
+    `;
+export type GetStacksComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<GetStacksQuery, GetStacksQueryVariables>, 'query'>;
+
+    export const GetStacksComponent = (props: GetStacksComponentProps) => (
+      <ApolloReactComponents.Query<GetStacksQuery, GetStacksQueryVariables> query={GetStacksDocument} {...props} />
+    );
+    
+export type GetStacksProps<TChildProps = {}, TDataName extends string = 'data'> = {
+      [key in TDataName]: ApolloReactHoc.DataValue<GetStacksQuery, GetStacksQueryVariables>
+    } & TChildProps;
+export function withGetStacks<TProps, TChildProps = {}, TDataName extends string = 'data'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  GetStacksQuery,
+  GetStacksQueryVariables,
+  GetStacksProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withQuery<TProps, GetStacksQuery, GetStacksQueryVariables, GetStacksProps<TChildProps, TDataName>>(GetStacksDocument, {
+      alias: 'getStacks',
+      ...operationOptions
+    });
+};
+export type GetStacksQueryResult = ApolloReactCommon.QueryResult<GetStacksQuery, GetStacksQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {

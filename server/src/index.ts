@@ -7,6 +7,7 @@ import { createConnection } from "typeorm";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import dotenv from "dotenv";
+import { graphqlUploadExpress } from "graphql-upload";
 
 import { redis } from "./redis";
 import cors from "cors";
@@ -23,6 +24,7 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     schema,
     context: ({ req, res }: any) => ({ req, res }),
+    uploads: false,
   });
 
   const app = Express();
@@ -40,7 +42,7 @@ const main = async () => {
         client: redis,
       }),
       name: "qid",
-      secret: "asdasdasdasd",
+      secret: process.env.SECRET as any,
       resave: false,
       saveUninitialized: false,
       cookie: {
@@ -49,6 +51,11 @@ const main = async () => {
         maxAge: 1000 * 60 * 60 * 24 * 7 * 365,
       },
     })
+  );
+
+  app.use(
+    "/graphql",
+    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })
   );
 
   apolloServer.applyMiddleware({ app, cors: false });

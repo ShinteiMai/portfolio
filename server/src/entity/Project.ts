@@ -26,6 +26,10 @@ export class Project extends BaseEntity {
   @Column()
   year: string;
 
+  @Field()
+  @Column()
+  thumbnailUrl: string;
+
   @Field(() => [Link])
   async links() {
     return await Link.find({
