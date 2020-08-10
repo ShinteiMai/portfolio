@@ -1,36 +1,10 @@
-import React from "react";
 import Layout from "../components/Layout";
 import { CreateImageComponent } from "../generated/apolloComponents";
+import { ApolloContext } from "../interfaces/ApolloContext";
+import { fetchImagesQuery } from "../graphql/user/queries/fetchImages";
 // import { Formik } from "formik";
-// import { CreateImageComponent } from "../generated/apolloComponents";
 
-const Images: React.FC = () => {
-  // const apolloClient = useApolloClient();
-
-  // const onChange = async ({
-  //   target: {
-  //     validity,
-  //     files: [file],
-  //   },
-  // }: any) => {
-  //   if (file) {
-  //     if (validity.valid) {
-  //       console.log("asd");
-  //       console.log(file);
-  //       const response = await apolloClient.mutate<
-  //         CreateImageMutation,
-  //         CreateImageMutationVariables
-  //       >({
-  //         mutation: createImageMutation,
-  //         variables: {
-  //           image: file,
-  //         },
-  //       });
-  //       console.log(response);
-  //     }
-  //   }
-  // };
-
+const Images = () => {
   return (
     <Layout>
       <div>
@@ -66,6 +40,16 @@ const Images: React.FC = () => {
       </div>
     </Layout>
   );
+};
+
+Images.getInitialProps = async ({
+  query: {},
+  apolloClient,
+  ...ctx
+}: ApolloContext) => {
+  const images = await apolloClient.query({
+    query: fetchImagesQuery,
+  });
 };
 
 export default Images;

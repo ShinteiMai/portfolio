@@ -84,11 +84,18 @@ export type RegisterInput = {
 
 export type Query = {
   __typename?: 'Query';
+  fetchImage?: Maybe<Image>;
+  fetchImages?: Maybe<Array<Image>>;
   getLinks: Array<Link>;
   getProjects?: Maybe<Array<Project>>;
   getProject?: Maybe<Project>;
   getStacks: Array<Stack>;
   me?: Maybe<User>;
+};
+
+
+export type QueryFetchImageArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -98,7 +105,9 @@ export type QueryGetProjectArgs = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createImage: Image;
+  createImage?: Maybe<Image>;
+  deleteImage?: Maybe<Image>;
+  updateImage?: Maybe<Image>;
   createLink: Link;
   deleteLink: Scalars['Boolean'];
   updateLink: Scalars['Boolean'];
@@ -115,6 +124,17 @@ export type Mutation = {
 
 export type MutationCreateImageArgs = {
   image: Scalars['Upload'];
+};
+
+
+export type MutationDeleteImageArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationUpdateImageArgs = {
+  image: Scalars['Upload'];
+  id: Scalars['String'];
 };
 
 
@@ -189,10 +209,10 @@ export type CreateImageMutationVariables = Exact<{
 
 export type CreateImageMutation = (
   { __typename?: 'Mutation' }
-  & { createImage: (
+  & { createImage?: Maybe<(
     { __typename?: 'Image' }
     & Pick<Image, 'id' | 'url' | 'filename'>
-  ) }
+  )> }
 );
 
 export type CreateProjectMutationVariables = Exact<{
@@ -233,6 +253,19 @@ export type CreateStackMutation = (
   ) }
 );
 
+export type DeleteImageMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteImageMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteImage?: Maybe<(
+    { __typename?: 'Image' }
+    & Pick<Image, 'id' | 'url' | 'filename'>
+  )> }
+);
+
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
   password: Scalars['String'];
@@ -253,6 +286,44 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 export type LogoutMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'logout'>
+);
+
+export type UpdateImageMutationVariables = Exact<{
+  id: Scalars['String'];
+  image: Scalars['Upload'];
+}>;
+
+
+export type UpdateImageMutation = (
+  { __typename?: 'Mutation' }
+  & { updateImage?: Maybe<(
+    { __typename?: 'Image' }
+    & Pick<Image, 'id' | 'url' | 'filename'>
+  )> }
+);
+
+export type FetchImageQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type FetchImageQuery = (
+  { __typename?: 'Query' }
+  & { fetchImage?: Maybe<(
+    { __typename?: 'Image' }
+    & Pick<Image, 'id' | 'url' | 'filename'>
+  )> }
+);
+
+export type FetchImagesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchImagesQuery = (
+  { __typename?: 'Query' }
+  & { fetchImages?: Maybe<Array<(
+    { __typename?: 'Image' }
+    & Pick<Image, 'id' | 'url' | 'filename'>
+  )>> }
 );
 
 export type GetStacksQueryVariables = Exact<{ [key: string]: never; }>;
@@ -382,6 +453,37 @@ export function withCreateStack<TProps, TChildProps = {}, TDataName extends stri
 };
 export type CreateStackMutationResult = ApolloReactCommon.MutationResult<CreateStackMutation>;
 export type CreateStackMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateStackMutation, CreateStackMutationVariables>;
+export const DeleteImageDocument = gql`
+    mutation deleteImage($id: String!) {
+  deleteImage(id: $id) {
+    id
+    url
+    filename
+  }
+}
+    `;
+export type DeleteImageMutationFn = ApolloReactCommon.MutationFunction<DeleteImageMutation, DeleteImageMutationVariables>;
+export type DeleteImageComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<DeleteImageMutation, DeleteImageMutationVariables>, 'mutation'>;
+
+    export const DeleteImageComponent = (props: DeleteImageComponentProps) => (
+      <ApolloReactComponents.Mutation<DeleteImageMutation, DeleteImageMutationVariables> mutation={DeleteImageDocument} {...props} />
+    );
+    
+export type DeleteImageProps<TChildProps = {}, TDataName extends string = 'mutate'> = {
+      [key in TDataName]: ApolloReactCommon.MutationFunction<DeleteImageMutation, DeleteImageMutationVariables>
+    } & TChildProps;
+export function withDeleteImage<TProps, TChildProps = {}, TDataName extends string = 'mutate'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  DeleteImageMutation,
+  DeleteImageMutationVariables,
+  DeleteImageProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withMutation<TProps, DeleteImageMutation, DeleteImageMutationVariables, DeleteImageProps<TChildProps, TDataName>>(DeleteImageDocument, {
+      alias: 'deleteImage',
+      ...operationOptions
+    });
+};
+export type DeleteImageMutationResult = ApolloReactCommon.MutationResult<DeleteImageMutation>;
+export type DeleteImageMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteImageMutation, DeleteImageMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($username: String!, $password: String!) {
   login(data: {username: $username, password: $password}) {
@@ -439,6 +541,95 @@ export function withLogout<TProps, TChildProps = {}, TDataName extends string = 
 };
 export type LogoutMutationResult = ApolloReactCommon.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = ApolloReactCommon.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export const UpdateImageDocument = gql`
+    mutation updateImage($id: String!, $image: Upload!) {
+  updateImage(id: $id, image: $image) {
+    id
+    url
+    filename
+  }
+}
+    `;
+export type UpdateImageMutationFn = ApolloReactCommon.MutationFunction<UpdateImageMutation, UpdateImageMutationVariables>;
+export type UpdateImageComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<UpdateImageMutation, UpdateImageMutationVariables>, 'mutation'>;
+
+    export const UpdateImageComponent = (props: UpdateImageComponentProps) => (
+      <ApolloReactComponents.Mutation<UpdateImageMutation, UpdateImageMutationVariables> mutation={UpdateImageDocument} {...props} />
+    );
+    
+export type UpdateImageProps<TChildProps = {}, TDataName extends string = 'mutate'> = {
+      [key in TDataName]: ApolloReactCommon.MutationFunction<UpdateImageMutation, UpdateImageMutationVariables>
+    } & TChildProps;
+export function withUpdateImage<TProps, TChildProps = {}, TDataName extends string = 'mutate'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  UpdateImageMutation,
+  UpdateImageMutationVariables,
+  UpdateImageProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withMutation<TProps, UpdateImageMutation, UpdateImageMutationVariables, UpdateImageProps<TChildProps, TDataName>>(UpdateImageDocument, {
+      alias: 'updateImage',
+      ...operationOptions
+    });
+};
+export type UpdateImageMutationResult = ApolloReactCommon.MutationResult<UpdateImageMutation>;
+export type UpdateImageMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateImageMutation, UpdateImageMutationVariables>;
+export const FetchImageDocument = gql`
+    query fetchImage($id: String!) {
+  fetchImage(id: $id) {
+    id
+    url
+    filename
+  }
+}
+    `;
+export type FetchImageComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<FetchImageQuery, FetchImageQueryVariables>, 'query'> & ({ variables: FetchImageQueryVariables; skip?: boolean; } | { skip: boolean; });
+
+    export const FetchImageComponent = (props: FetchImageComponentProps) => (
+      <ApolloReactComponents.Query<FetchImageQuery, FetchImageQueryVariables> query={FetchImageDocument} {...props} />
+    );
+    
+export type FetchImageProps<TChildProps = {}, TDataName extends string = 'data'> = {
+      [key in TDataName]: ApolloReactHoc.DataValue<FetchImageQuery, FetchImageQueryVariables>
+    } & TChildProps;
+export function withFetchImage<TProps, TChildProps = {}, TDataName extends string = 'data'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  FetchImageQuery,
+  FetchImageQueryVariables,
+  FetchImageProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withQuery<TProps, FetchImageQuery, FetchImageQueryVariables, FetchImageProps<TChildProps, TDataName>>(FetchImageDocument, {
+      alias: 'fetchImage',
+      ...operationOptions
+    });
+};
+export type FetchImageQueryResult = ApolloReactCommon.QueryResult<FetchImageQuery, FetchImageQueryVariables>;
+export const FetchImagesDocument = gql`
+    query fetchImages {
+  fetchImages {
+    id
+    url
+    filename
+  }
+}
+    `;
+export type FetchImagesComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<FetchImagesQuery, FetchImagesQueryVariables>, 'query'>;
+
+    export const FetchImagesComponent = (props: FetchImagesComponentProps) => (
+      <ApolloReactComponents.Query<FetchImagesQuery, FetchImagesQueryVariables> query={FetchImagesDocument} {...props} />
+    );
+    
+export type FetchImagesProps<TChildProps = {}, TDataName extends string = 'data'> = {
+      [key in TDataName]: ApolloReactHoc.DataValue<FetchImagesQuery, FetchImagesQueryVariables>
+    } & TChildProps;
+export function withFetchImages<TProps, TChildProps = {}, TDataName extends string = 'data'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  FetchImagesQuery,
+  FetchImagesQueryVariables,
+  FetchImagesProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withQuery<TProps, FetchImagesQuery, FetchImagesQueryVariables, FetchImagesProps<TChildProps, TDataName>>(FetchImagesDocument, {
+      alias: 'fetchImages',
+      ...operationOptions
+    });
+};
+export type FetchImagesQueryResult = ApolloReactCommon.QueryResult<FetchImagesQuery, FetchImagesQueryVariables>;
 export const GetStacksDocument = gql`
     query getStacks {
   getStacks {
