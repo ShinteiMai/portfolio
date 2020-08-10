@@ -3,10 +3,12 @@ import { LinkInput } from "./Inputs/LinkInput";
 import { Project } from "../../entity/Project";
 import { Stack } from "../../entity/Stack";
 import { Link } from "../../entity/Link";
-import { GraphQLUpload } from "graphql-upload";
-import { Upload } from "../../types/Upload";
-import { createWriteStream } from "fs";
-import shortid from "shortid";
+// import { GraphQLUpload } from "graphql-upload";
+// import { Upload } from "../../types/Upload";
+// import { createWriteStream } from "fs";
+// import shortid from "shortid";
+// import { createWriteStream, unlink } from "fs";
+// import shortid from "shortid";
 
 export const validateStacks = async (
   stackIds: string[]
@@ -28,28 +30,13 @@ export class ProjectResolver {
   async createProject(
     @Arg("title") title: string,
     @Arg("year") year: string,
-    @Arg("thumbnail", () => GraphQLUpload)
-    { createReadStream, filename }: Upload,
+    @Arg("thumbnailUrl") thumbnailUrl: string,
     @Arg("stacks", () => [String]) stacks: string[],
     @Arg("links", () => [LinkInput]) links: LinkInput[]
   ): Promise<Project | null> {
     try {
       const projectStacks = await validateStacks(stacks);
       if (projectStacks != null) {
-        const thumbnailId = shortid.generate();
-        const thumbnailUrl =
-          __dirname + `/../../../images/${thumbnailId}${filename}`;
-
-        await new Promise(async (resolve, reject) => {
-          createReadStream()
-            .pipe(createWriteStream(thumbnailUrl))
-            .on("finish", () => resolve(true))
-            .on("error", () => {
-              reject(false);
-              return null;
-            });
-        });
-
         const project = await Project.create({
           title,
           year,

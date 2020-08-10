@@ -6,6 +6,7 @@ import {
   CreateProjectComponent,
   GetStacksQuery,
   GetStacksQueryVariables,
+  CreateImageComponent,
 } from "../generated/apolloComponents";
 import { meQuery } from "../graphql/user/queries/me";
 import { getStacksQuery } from "../graphql/user/queries/getStacks";
@@ -45,15 +46,16 @@ const Admin = ({ stacks }: Props) => {
                 validateOnChange={false}
                 onSubmit={async (data) => {
                   console.log(data);
-                  // const response = await createProject({
-                  //   variables: data
-                  // });
+                  const response = await createProject({
+                    variables: data,
+                  });
+                  console.log(response);
                 }}
                 initialValues={{
                   title: "",
                   year: "",
-                  thumbnail: "",
-                  stacks: stacks,
+                  thumbnailUrl: "",
+                  stacks: [],
                   links: [
                     {
                       type: "",
@@ -62,7 +64,7 @@ const Admin = ({ stacks }: Props) => {
                   ],
                 }}
               >
-                {({ handleSubmit, setFieldValue, values }) => (
+                {({ handleSubmit, values }) => (
                   <form onSubmit={handleSubmit}>
                     <Field
                       name="title"
@@ -76,61 +78,48 @@ const Admin = ({ stacks }: Props) => {
                       type="text"
                       component={InputField}
                     />
-                    <input
-                      name="thumbnail"
-                      type="file"
-                      onChange={(event) => {
-                        if (event.currentTarget.files) {
-                          setFieldValue(
-                            "thumbnail",
-                            event.currentTarget.files[0]
-                          );
-                        }
-                      }}
-                    />
-                    <FieldArray name="stacks">
-                      {(helpers) => (
-                        <div>
-                          {values.stacks && values.stacks.length > 0 ? (
-                            values.stacks.map((_, index) => (
-                              <div key={index}>
-                                <Field
-                                  type="text"
-                                  name={`stacks[${index}].name`}
-                                  placeholder="Stack"
-                                  component={InputField}
-                                />
-                                <Field
-                                  type="text"
-                                  name={`stacks[${index}].url`}
-                                  placeholder="Stack URL"
-                                  component={InputField}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => helpers.remove(index)}
-                                >
-                                  -
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => helpers.insert(index, "")}
-                                >
-                                  +
-                                </button>
-                              </div>
-                            ))
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => helpers.push("")}
-                            >
-                              Add a stack
-                            </button>
-                          )}
-                        </div>
+                    <CreateImageComponent>
+                      {(createImage) => (
+                        <input
+                          name="thumbnail"
+                          type="file"
+                          onChange={async ({ target: { validity, files } }) => {
+                            if (validity.valid && files) {
+                              console.log(files[0]);
+                              try {
+                                console.log("hi");
+                                const response = await createImage({
+                                  variables: {
+                                    thumbnail: files[0],
+                                  },
+                                });
+                                console.log(response);
+                              } catch (err) {
+                                console.log(err);
+                              }
+                              // setFieldValue("thumbnail", files[0]);
+                            }
+                          }}
+                        />
                       )}
-                    </FieldArray>
+                    </CreateImageComponent>
+                    <div>
+                      <div className="label">
+                        Select the stacks that are used in this project
+                      </div>
+                      {stacks.map((stack) => {
+                        return (
+                          <label key={stack.id}>
+                            <Field
+                              type="checkbox"
+                              name="stacks"
+                              value={stack.id}
+                            />
+                            {stack.name}
+                          </label>
+                        );
+                      })}
+                    </div>
                     <FieldArray name="links">
                       {(helpers) => (
                         <div>
@@ -141,13 +130,11 @@ const Admin = ({ stacks }: Props) => {
                                   type="text"
                                   name={`links[${index}].type`}
                                   placeholder="Link Type"
-                                  component={InputField}
                                 />
                                 <Field
                                   type="text"
                                   name={`links[${index}].url`}
                                   placeholder="URL"
-                                  component={InputField}
                                 />
 
                                 <button
@@ -158,7 +145,12 @@ const Admin = ({ stacks }: Props) => {
                                 </button>
                                 <button
                                   type="button"
-                                  onClick={() => helpers.insert(index, "")}
+                                  onClick={() =>
+                                    helpers.insert(index, {
+                                      type: "",
+                                      url: "",
+                                    })
+                                  }
                                 >
                                   +
                                 </button>

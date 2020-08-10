@@ -23,6 +23,13 @@ export type User = {
   username: Scalars['String'];
 };
 
+export type Image = {
+  __typename?: 'Image';
+  id: Scalars['String'];
+  url: Scalars['String'];
+  filename: Scalars['String'];
+};
+
 export type Stack = {
   __typename?: 'Stack';
   id: Scalars['String'];
@@ -91,6 +98,7 @@ export type QueryGetProjectArgs = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createImage: Image;
   createLink: Link;
   deleteLink: Scalars['Boolean'];
   updateLink: Scalars['Boolean'];
@@ -102,6 +110,11 @@ export type Mutation = {
   updateStack?: Maybe<Scalars['Boolean']>;
   login?: Maybe<User>;
   logout: Scalars['Boolean'];
+};
+
+
+export type MutationCreateImageArgs = {
+  image: Scalars['Upload'];
 };
 
 
@@ -126,7 +139,7 @@ export type MutationUpdateLinkArgs = {
 export type MutationCreateProjectArgs = {
   links: Array<LinkInput>;
   stacks: Array<Scalars['String']>;
-  thumbnail: Scalars['Upload'];
+  thumbnailUrl: Scalars['String'];
   year: Scalars['String'];
   title: Scalars['String'];
 };
@@ -169,10 +182,23 @@ export type MutationLoginArgs = {
 };
 
 
+export type CreateImageMutationVariables = Exact<{
+  image: Scalars['Upload'];
+}>;
+
+
+export type CreateImageMutation = (
+  { __typename?: 'Mutation' }
+  & { createImage: (
+    { __typename?: 'Image' }
+    & Pick<Image, 'id' | 'url' | 'filename'>
+  ) }
+);
+
 export type CreateProjectMutationVariables = Exact<{
   title: Scalars['String'];
   year: Scalars['String'];
-  thumbnail: Scalars['Upload'];
+  thumbnailUrl: Scalars['String'];
   stacks: Array<Scalars['String']>;
   links: Array<LinkInput>;
 }>;
@@ -252,9 +278,40 @@ export type MeQuery = (
 );
 
 
+export const CreateImageDocument = gql`
+    mutation createImage($image: Upload!) {
+  createImage(image: $image) {
+    id
+    url
+    filename
+  }
+}
+    `;
+export type CreateImageMutationFn = ApolloReactCommon.MutationFunction<CreateImageMutation, CreateImageMutationVariables>;
+export type CreateImageComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<CreateImageMutation, CreateImageMutationVariables>, 'mutation'>;
+
+    export const CreateImageComponent = (props: CreateImageComponentProps) => (
+      <ApolloReactComponents.Mutation<CreateImageMutation, CreateImageMutationVariables> mutation={CreateImageDocument} {...props} />
+    );
+    
+export type CreateImageProps<TChildProps = {}, TDataName extends string = 'mutate'> = {
+      [key in TDataName]: ApolloReactCommon.MutationFunction<CreateImageMutation, CreateImageMutationVariables>
+    } & TChildProps;
+export function withCreateImage<TProps, TChildProps = {}, TDataName extends string = 'mutate'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  CreateImageMutation,
+  CreateImageMutationVariables,
+  CreateImageProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withMutation<TProps, CreateImageMutation, CreateImageMutationVariables, CreateImageProps<TChildProps, TDataName>>(CreateImageDocument, {
+      alias: 'createImage',
+      ...operationOptions
+    });
+};
+export type CreateImageMutationResult = ApolloReactCommon.MutationResult<CreateImageMutation>;
+export type CreateImageMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateImageMutation, CreateImageMutationVariables>;
 export const CreateProjectDocument = gql`
-    mutation createProject($title: String!, $year: String!, $thumbnail: Upload!, $stacks: [String!]!, $links: [LinkInput!]!) {
-  createProject(title: $title, year: $year, thumbnail: $thumbnail, stacks: $stacks, links: $links) {
+    mutation createProject($title: String!, $year: String!, $thumbnailUrl: String!, $stacks: [String!]!, $links: [LinkInput!]!) {
+  createProject(title: $title, year: $year, thumbnailUrl: $thumbnailUrl, stacks: $stacks, links: $links) {
     id
     title
     year

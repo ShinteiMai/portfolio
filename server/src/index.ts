@@ -1,16 +1,18 @@
 import "reflect-metadata";
 
 import { ApolloServer } from "apollo-server-express";
-import Express from "express";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
-import session from "express-session";
-import connectRedis from "connect-redis";
-import dotenv from "dotenv";
 import { graphqlUploadExpress } from "graphql-upload";
 
-import { redis } from "./redis";
+import Express from "express";
+import session from "express-session";
+import * as path from "path";
+import connectRedis from "connect-redis";
+import dotenv from "dotenv";
 import cors from "cors";
+
+import { redis } from "./redis";
 import { createBaseUser } from "./modules/utils/createBaseUser";
 
 const main = async () => {
@@ -31,7 +33,7 @@ const main = async () => {
   app.use(
     cors({
       credentials: true,
-      origin: `http://localhost:3000`,
+      origin: process.env.CORS_ORIGIN,
     })
   );
 
@@ -41,7 +43,7 @@ const main = async () => {
       store: new RedisStore({
         client: redis,
       }),
-      name: "qid",
+      name: process.env.COOKIE_NAME,
       secret: process.env.SECRET as any,
       resave: false,
       saveUninitialized: false,
@@ -58,11 +60,13 @@ const main = async () => {
     graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })
   );
 
+  app.use("/images", Express.static(path.join(__dirname, "/../images")));
+
   apolloServer.applyMiddleware({ app, cors: false });
 
-  app.listen(4000, () => {
+  app.listen(process.env.PORT, () => {
     createBaseUser();
-    console.log(`Server started on http://localhost:4000/graphql`);
+    console.log(`[System] Server started on ${process.env.BASE_URL}/graphql`);
   });
 };
 

@@ -7,6 +7,7 @@ import { createHttpLink } from "apollo-link-http";
 import { setContext } from "apollo-link-context";
 import fetch from "isomorphic-unfetch";
 import { isBrowser } from "./isBrowser";
+import { createUploadLink } from "apollo-upload-client";
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | null = null;
 
@@ -19,7 +20,7 @@ interface Options {
 }
 
 const create = (initialState: any, { getToken }: Options) => {
-  const httpLink = createHttpLink({
+  const httpLink = createUploadLink({
     uri: "http://localhost:4000/graphql",
     credentials: "include",
   });
