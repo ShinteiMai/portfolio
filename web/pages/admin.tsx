@@ -174,6 +174,10 @@ const Admin = ({ stacks }: Props) => {
             )}
           </CreateProjectComponent>
         </div>
+        <div>
+          <h1>List of Projects</h1>
+          <div>insert projects here later from the fetch</div>
+        </div>
       </div>
     </Layout>
   );
