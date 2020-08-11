@@ -4,21 +4,25 @@ export const createProjectMutation = gql`
   mutation createProject(
     $title: String!
     $year: String!
-    $thumbnailUrl: String!
+    $imageId: String!
     $stacks: [String!]!
     $links: [LinkInput!]!
   ) {
     createProject(
       title: $title
       year: $year
-      thumbnailUrl: $thumbnailUrl
+      imageId: $imageId
       stacks: $stacks
       links: $links
     ) {
       id
       title
       year
-      thumbnailUrl
+      image {
+        id
+        url
+        filename
+      }
       stacks {
         id
         name

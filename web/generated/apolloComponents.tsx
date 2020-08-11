@@ -42,7 +42,7 @@ export type Project = {
   id: Scalars['String'];
   title: Scalars['String'];
   year: Scalars['String'];
-  thumbnailUrl: Scalars['String'];
+  image: Image;
   links: Array<Link>;
   stacks: Array<Stack>;
 };
@@ -159,7 +159,7 @@ export type MutationUpdateLinkArgs = {
 export type MutationCreateProjectArgs = {
   links: Array<LinkInput>;
   stacks: Array<Scalars['String']>;
-  thumbnailUrl: Scalars['String'];
+  imageId: Scalars['String'];
   year: Scalars['String'];
   title: Scalars['String'];
 };
@@ -218,7 +218,7 @@ export type CreateImageMutation = (
 export type CreateProjectMutationVariables = Exact<{
   title: Scalars['String'];
   year: Scalars['String'];
-  thumbnailUrl: Scalars['String'];
+  imageId: Scalars['String'];
   stacks: Array<Scalars['String']>;
   links: Array<LinkInput>;
 }>;
@@ -228,8 +228,11 @@ export type CreateProjectMutation = (
   { __typename?: 'Mutation' }
   & { createProject?: Maybe<(
     { __typename?: 'Project' }
-    & Pick<Project, 'id' | 'title' | 'year' | 'thumbnailUrl'>
-    & { stacks: Array<(
+    & Pick<Project, 'id' | 'title' | 'year'>
+    & { image: (
+      { __typename?: 'Image' }
+      & Pick<Image, 'id' | 'url' | 'filename'>
+    ), stacks: Array<(
       { __typename?: 'Stack' }
       & Pick<Stack, 'id' | 'name' | 'url'>
     )>, links: Array<(
@@ -381,12 +384,16 @@ export function withCreateImage<TProps, TChildProps = {}, TDataName extends stri
 export type CreateImageMutationResult = ApolloReactCommon.MutationResult<CreateImageMutation>;
 export type CreateImageMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateImageMutation, CreateImageMutationVariables>;
 export const CreateProjectDocument = gql`
-    mutation createProject($title: String!, $year: String!, $thumbnailUrl: String!, $stacks: [String!]!, $links: [LinkInput!]!) {
-  createProject(title: $title, year: $year, thumbnailUrl: $thumbnailUrl, stacks: $stacks, links: $links) {
+    mutation createProject($title: String!, $year: String!, $imageId: String!, $stacks: [String!]!, $links: [LinkInput!]!) {
+  createProject(title: $title, year: $year, imageId: $imageId, stacks: $stacks, links: $links) {
     id
     title
     year
-    thumbnailUrl
+    image {
+      id
+      url
+      filename
+    }
     stacks {
       id
       name

@@ -3,12 +3,7 @@ import { LinkInput } from "./Inputs/LinkInput";
 import { Project } from "../../entity/Project";
 import { Stack } from "../../entity/Stack";
 import { Link } from "../../entity/Link";
-// import { GraphQLUpload } from "graphql-upload";
-// import { Upload } from "../../types/Upload";
-// import { createWriteStream } from "fs";
-// import shortid from "shortid";
-// import { createWriteStream, unlink } from "fs";
-// import shortid from "shortid";
+import { Image } from "../../entity/Image";
 
 export const validateStacks = async (
   stackIds: string[]
@@ -30,28 +25,33 @@ export class ProjectResolver {
   async createProject(
     @Arg("title") title: string,
     @Arg("year") year: string,
-    @Arg("thumbnailUrl") thumbnailUrl: string,
+    @Arg("imageId") imageId: string,
     @Arg("stacks", () => [String]) stacks: string[],
     @Arg("links", () => [LinkInput]) links: LinkInput[]
   ): Promise<Project | null> {
     try {
-      const projectStacks = await validateStacks(stacks);
-      if (projectStacks != null) {
-        const project = await Project.create({
-          title,
-          year,
-          thumbnailUrl,
-          stacks: projectStacks,
-        });
-        await project.save();
+      const image = await Image.findOne(imageId);
 
-        for await (let link of links) {
-          await Link.create({ ...link, project }).save();
+      if (image) {
+        const projectStacks = await validateStacks(stacks);
+        if (projectStacks != null) {
+          const project = Project.create({
+            title,
+            year,
+            stacks: projectStacks,
+          });
+          project.image = image;
+          await project.save();
+
+          for await (let link of links) {
+            await Link.create({ ...link, project }).save();
+          }
+          return project;
         }
-
-        return project;
+        return null;
+      } else {
+        return null;
       }
-      return null;
     } catch (err) {
       return null;
     }
@@ -63,6 +63,12 @@ export class ProjectResolver {
       const project = await Project.findOne(id, { relations: ["stacks"] });
       if (project) {
         const links = await project.links();
+
+        await Image.createQueryBuilder()
+          .delete()
+          .from(Image)
+          .where("id = :id", { id: project.image })
+          .execute();
 
         for await (let link of links) {
           await link.remove();

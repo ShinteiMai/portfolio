@@ -17,7 +17,7 @@ import redirect from "../lib/redirect";
 import Link from "next/link";
 import { Formik, Field, FieldArray } from "formik";
 import { InputField } from "../components/fields/InputField";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useApolloClient } from "react-apollo";
 import { deleteImageMutation } from "../graphql/user/mutations/deleteImage";
 
@@ -35,27 +35,23 @@ const Admin = ({ stacks }: Props) => {
   const [imageId, setImageId] = useState("");
   const apolloClient = useApolloClient();
 
-  const imageIdRef = useRef(imageId);
-  imageIdRef.current = "";
-
   useEffect(() => {
+    console.log("in");
     return () => {
-      if (imageIdRef.current) {
-        deleteImage();
+      console.log("out");
+      if (imageId) {
+        console.log(`deleting image with imageid: ${imageId}`);
+        apolloClient.mutate<DeleteImageMutation, DeleteImageMutationVariables>({
+          mutation: deleteImageMutation,
+          variables: {
+            id: imageId,
+          },
+        });
+      } else {
+        console.log("no imageid provided");
       }
     };
   }, []);
-
-  const deleteImage = () => {
-    console.log(`deleting image with imageid: ${imageIdRef.current}`);
-    apolloClient.mutate<DeleteImageMutation, DeleteImageMutationVariables>({
-      mutation: deleteImageMutation,
-      variables: {
-        id: imageIdRef.current,
-      },
-    });
-    console.log("mutation was called");
-  };
 
   return (
     <Layout title="Admin Page">
@@ -77,16 +73,14 @@ const Admin = ({ stacks }: Props) => {
                 onSubmit={async (data) => {
                   console.log(data);
                   const response = await createProject({
-                    variables: {
-                      ...data,
-                      imageId: imageIdRef.current,
-                    },
+                    variables: data,
                   });
                   console.log(response);
                 }}
                 initialValues={{
                   title: "",
                   year: "",
+                  thumbnailUrl: "",
                   stacks: [],
                   links: [
                     {
@@ -134,12 +128,6 @@ const Admin = ({ stacks }: Props) => {
                                 ) {
                                   console.log(response);
                                   setImageId(response.data.createImage.id);
-                                  imageIdRef.current =
-                                    response.data.createImage.id;
-                                  window.addEventListener(
-                                    "beforeunload",
-                                    deleteImage
-                                  );
                                 }
                               } catch (err) {
                                 console.log(err);

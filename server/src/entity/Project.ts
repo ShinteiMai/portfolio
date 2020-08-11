@@ -7,9 +7,12 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { Link } from "./Link";
 import { Stack } from "./Stack";
+import { Image } from "./Image";
 
 @ObjectType()
 @Entity()
@@ -26,9 +29,10 @@ export class Project extends BaseEntity {
   @Column()
   year: string;
 
-  @Field()
-  @Column()
-  thumbnailUrl: string;
+  @Field(() => Image)
+  @OneToOne(() => Image)
+  @JoinColumn()
+  image: Image;
 
   @Field(() => [Link])
   async links() {
