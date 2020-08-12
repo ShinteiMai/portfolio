@@ -269,6 +269,29 @@ export type DeleteImageMutation = (
   )> }
 );
 
+export type DeleteProjectMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type DeleteProjectMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteProject?: Maybe<(
+    { __typename?: 'Project' }
+    & Pick<Project, 'id' | 'title' | 'year'>
+    & { image: (
+      { __typename?: 'Image' }
+      & Pick<Image, 'id' | 'url' | 'filename'>
+    ), stacks: Array<(
+      { __typename?: 'Stack' }
+      & Pick<Stack, 'id' | 'name' | 'url'>
+    )>, links: Array<(
+      { __typename?: 'Link' }
+      & Pick<Link, 'id' | 'type' | 'url'>
+    )> }
+  )> }
+);
+
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
   password: Scalars['String'];
@@ -327,6 +350,50 @@ export type FetchImagesQuery = (
     { __typename?: 'Image' }
     & Pick<Image, 'id' | 'url' | 'filename'>
   )>> }
+);
+
+export type GetProjectsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProjectsQuery = (
+  { __typename?: 'Query' }
+  & { getProjects?: Maybe<Array<(
+    { __typename?: 'Project' }
+    & Pick<Project, 'id' | 'title' | 'year'>
+    & { image: (
+      { __typename?: 'Image' }
+      & Pick<Image, 'id' | 'url' | 'filename'>
+    ), links: Array<(
+      { __typename?: 'Link' }
+      & Pick<Link, 'id' | 'type' | 'url'>
+    )>, stacks: Array<(
+      { __typename?: 'Stack' }
+      & Pick<Stack, 'id' | 'name' | 'url'>
+    )> }
+  )>> }
+);
+
+export type GetProjectQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type GetProjectQuery = (
+  { __typename?: 'Query' }
+  & { getProject?: Maybe<(
+    { __typename?: 'Project' }
+    & Pick<Project, 'id' | 'title' | 'year'>
+    & { image: (
+      { __typename?: 'Image' }
+      & Pick<Image, 'id' | 'filename' | 'url'>
+    ), stacks: Array<(
+      { __typename?: 'Stack' }
+      & Pick<Stack, 'id' | 'name' | 'url'>
+    )>, links: Array<(
+      { __typename?: 'Link' }
+      & Pick<Link, 'id' | 'type' | 'url'>
+    )> }
+  )> }
 );
 
 export type GetStacksQueryVariables = Exact<{ [key: string]: never; }>;
@@ -491,6 +558,52 @@ export function withDeleteImage<TProps, TChildProps = {}, TDataName extends stri
 };
 export type DeleteImageMutationResult = ApolloReactCommon.MutationResult<DeleteImageMutation>;
 export type DeleteImageMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteImageMutation, DeleteImageMutationVariables>;
+export const DeleteProjectDocument = gql`
+    mutation deleteProject($id: String!) {
+  deleteProject(id: $id) {
+    id
+    title
+    year
+    image {
+      id
+      url
+      filename
+    }
+    stacks {
+      id
+      name
+      url
+    }
+    links {
+      id
+      type
+      url
+    }
+  }
+}
+    `;
+export type DeleteProjectMutationFn = ApolloReactCommon.MutationFunction<DeleteProjectMutation, DeleteProjectMutationVariables>;
+export type DeleteProjectComponentProps = Omit<ApolloReactComponents.MutationComponentOptions<DeleteProjectMutation, DeleteProjectMutationVariables>, 'mutation'>;
+
+    export const DeleteProjectComponent = (props: DeleteProjectComponentProps) => (
+      <ApolloReactComponents.Mutation<DeleteProjectMutation, DeleteProjectMutationVariables> mutation={DeleteProjectDocument} {...props} />
+    );
+    
+export type DeleteProjectProps<TChildProps = {}, TDataName extends string = 'mutate'> = {
+      [key in TDataName]: ApolloReactCommon.MutationFunction<DeleteProjectMutation, DeleteProjectMutationVariables>
+    } & TChildProps;
+export function withDeleteProject<TProps, TChildProps = {}, TDataName extends string = 'mutate'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  DeleteProjectMutation,
+  DeleteProjectMutationVariables,
+  DeleteProjectProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withMutation<TProps, DeleteProjectMutation, DeleteProjectMutationVariables, DeleteProjectProps<TChildProps, TDataName>>(DeleteProjectDocument, {
+      alias: 'deleteProject',
+      ...operationOptions
+    });
+};
+export type DeleteProjectMutationResult = ApolloReactCommon.MutationResult<DeleteProjectMutation>;
+export type DeleteProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteProjectMutation, DeleteProjectMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($username: String!, $password: String!) {
   login(data: {username: $username, password: $password}) {
@@ -637,6 +750,94 @@ export function withFetchImages<TProps, TChildProps = {}, TDataName extends stri
     });
 };
 export type FetchImagesQueryResult = ApolloReactCommon.QueryResult<FetchImagesQuery, FetchImagesQueryVariables>;
+export const GetProjectsDocument = gql`
+    query getProjects {
+  getProjects {
+    id
+    title
+    year
+    image {
+      id
+      url
+      filename
+    }
+    links {
+      id
+      type
+      url
+    }
+    stacks {
+      id
+      name
+      url
+    }
+  }
+}
+    `;
+export type GetProjectsComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<GetProjectsQuery, GetProjectsQueryVariables>, 'query'>;
+
+    export const GetProjectsComponent = (props: GetProjectsComponentProps) => (
+      <ApolloReactComponents.Query<GetProjectsQuery, GetProjectsQueryVariables> query={GetProjectsDocument} {...props} />
+    );
+    
+export type GetProjectsProps<TChildProps = {}, TDataName extends string = 'data'> = {
+      [key in TDataName]: ApolloReactHoc.DataValue<GetProjectsQuery, GetProjectsQueryVariables>
+    } & TChildProps;
+export function withGetProjects<TProps, TChildProps = {}, TDataName extends string = 'data'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  GetProjectsQuery,
+  GetProjectsQueryVariables,
+  GetProjectsProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withQuery<TProps, GetProjectsQuery, GetProjectsQueryVariables, GetProjectsProps<TChildProps, TDataName>>(GetProjectsDocument, {
+      alias: 'getProjects',
+      ...operationOptions
+    });
+};
+export type GetProjectsQueryResult = ApolloReactCommon.QueryResult<GetProjectsQuery, GetProjectsQueryVariables>;
+export const GetProjectDocument = gql`
+    query getProject($id: String!) {
+  getProject(id: $id) {
+    id
+    title
+    year
+    image {
+      id
+      filename
+      url
+    }
+    stacks {
+      id
+      name
+      url
+    }
+    links {
+      id
+      type
+      url
+    }
+  }
+}
+    `;
+export type GetProjectComponentProps = Omit<ApolloReactComponents.QueryComponentOptions<GetProjectQuery, GetProjectQueryVariables>, 'query'> & ({ variables: GetProjectQueryVariables; skip?: boolean; } | { skip: boolean; });
+
+    export const GetProjectComponent = (props: GetProjectComponentProps) => (
+      <ApolloReactComponents.Query<GetProjectQuery, GetProjectQueryVariables> query={GetProjectDocument} {...props} />
+    );
+    
+export type GetProjectProps<TChildProps = {}, TDataName extends string = 'data'> = {
+      [key in TDataName]: ApolloReactHoc.DataValue<GetProjectQuery, GetProjectQueryVariables>
+    } & TChildProps;
+export function withGetProject<TProps, TChildProps = {}, TDataName extends string = 'data'>(operationOptions?: ApolloReactHoc.OperationOption<
+  TProps,
+  GetProjectQuery,
+  GetProjectQueryVariables,
+  GetProjectProps<TChildProps, TDataName>>) {
+    return ApolloReactHoc.withQuery<TProps, GetProjectQuery, GetProjectQueryVariables, GetProjectProps<TChildProps, TDataName>>(GetProjectDocument, {
+      alias: 'getProject',
+      ...operationOptions
+    });
+};
+export type GetProjectQueryResult = ApolloReactCommon.QueryResult<GetProjectQuery, GetProjectQueryVariables>;
 export const GetStacksDocument = gql`
     query getStacks {
   getStacks {

@@ -22,7 +22,6 @@ const Image = ({ image }: Props) => {
     <div key={image.id}>
       <h1>Update Image {image.filename}</h1>
       <img src={image.url} />
-
       <div>
         <UpdateImageComponent>
           {(updateImage) => (

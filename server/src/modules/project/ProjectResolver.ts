@@ -60,7 +60,9 @@ export class ProjectResolver {
   @Mutation(() => Project, { nullable: true })
   async deleteProject(@Arg("id") id: string): Promise<Project | null> {
     try {
-      const project = await Project.findOne(id, { relations: ["stacks"] });
+      const project = await Project.findOne(id, {
+        relations: ["stacks", "image"],
+      });
       if (project) {
         const links = await project.links();
 
@@ -95,7 +97,9 @@ export class ProjectResolver {
   ): Promise<Project | null> {
     const projectStacks = await validateStacks(stacks);
     if (projectStacks) {
-      const project = await Project.findOne(id, { relations: ["stacks"] });
+      const project = await Project.findOne(id, {
+        relations: ["stacks", "image"],
+      });
       console.log(project);
       if (project) {
         const projectLinks = await project.links();
@@ -124,7 +128,7 @@ export class ProjectResolver {
 
   @Query(() => [Project], { nullable: true })
   async getProjects(): Promise<Project[] | null> {
-    const projects = await Project.find({ relations: ["stacks"] });
+    const projects = await Project.find({ relations: ["stacks", "image"] });
     console.log(projects);
     if (projects) {
       return projects;
@@ -135,7 +139,9 @@ export class ProjectResolver {
 
   @Query(() => Project, { nullable: true })
   async getProject(@Arg("id") id: string): Promise<Project | null> {
-    const project = await Project.findOne(id, { relations: ["stacks"] });
+    const project = await Project.findOne(id, {
+      relations: ["stacks", "image"],
+    });
     if (project) {
       return project;
     } else {

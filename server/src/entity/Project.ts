@@ -20,10 +20,7 @@ export class Project extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn("uuid")
   id: string;
-
-  @Field()
-  @Column()
-  title: string;
+  @Field() @Column() title: string;
 
   @Field()
   @Column()

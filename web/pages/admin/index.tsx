@@ -1,5 +1,5 @@
-import Layout from "../components/Layout";
-import { ApolloContext } from "../interfaces/ApolloContext";
+import Layout from "../../components/Layout";
+import { ApolloContext } from "../../interfaces/ApolloContext";
 import {
   MeQuery,
   MeQueryVariables,
@@ -9,17 +9,21 @@ import {
   CreateImageComponent,
   DeleteImageMutation,
   DeleteImageMutationVariables,
-} from "../generated/apolloComponents";
-import { meQuery } from "../graphql/user/queries/me";
-import { getStacksQuery } from "../graphql/user/queries/getStacks";
+  GetProjectsQueryVariables,
+  GetProjectsQuery,
+  Project,
+} from "../../generated/apolloComponents";
+import { meQuery } from "../../graphql/user/queries/me";
+import { getStacksQuery } from "../../graphql/user/queries/getStacks";
 
-import redirect from "../lib/redirect";
+import redirect from "../../lib/redirect";
 import Link from "next/link";
 import { Formik, Field, FieldArray } from "formik";
-import { InputField } from "../components/fields/InputField";
+import { InputField } from "../../components/fields/InputField";
 import { useState, useEffect, useRef } from "react";
 import { useApolloClient } from "react-apollo";
-import { deleteImageMutation } from "../graphql/user/mutations/deleteImage";
+import { deleteImageMutation } from "../../graphql/user/mutations/deleteImage";
+import { getProjectsQuery } from "../../graphql/user/queries/fetchProjects";
 
 interface Stack {
   id: string;
@@ -29,10 +33,12 @@ interface Stack {
 
 interface Props {
   stacks: Stack[];
+  projects: Project[];
 }
 
-const Admin = ({ stacks }: Props) => {
+const Admin = ({ stacks, projects }: Props) => {
   const [imageId, setImageId] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const apolloClient = useApolloClient();
 
   const imageIdRef = useRef(imageId);
@@ -40,21 +46,19 @@ const Admin = ({ stacks }: Props) => {
 
   useEffect(() => {
     return () => {
-      if (imageIdRef.current) {
+      if (imageIdRef.current && !isSubmitted) {
         deleteImage();
       }
     };
   }, []);
 
   const deleteImage = () => {
-    console.log(`deleting image with imageid: ${imageIdRef.current}`);
     apolloClient.mutate<DeleteImageMutation, DeleteImageMutationVariables>({
       mutation: deleteImageMutation,
       variables: {
         id: imageIdRef.current,
       },
     });
-    console.log("mutation was called");
   };
 
   return (
@@ -82,6 +86,7 @@ const Admin = ({ stacks }: Props) => {
                       imageId: imageIdRef.current,
                     },
                   });
+                  setIsSubmitted(true);
                   console.log(response);
                 }}
                 initialValues={{
@@ -132,7 +137,6 @@ const Admin = ({ stacks }: Props) => {
                                   response.data &&
                                   response.data.createImage
                                 ) {
-                                  console.log(response);
                                   setImageId(response.data.createImage.id);
                                   imageIdRef.current =
                                     response.data.createImage.id;
@@ -223,7 +227,33 @@ const Admin = ({ stacks }: Props) => {
         </div>
         <div>
           <h1>List of Projects</h1>
-          <div>insert projects here later from the fetch</div>
+          <div>
+            {projects.map((project) => {
+              return (
+                <div key={project.id}>
+                  <Link href="/admin/[projectId]" as={`/admin/${project.id}`}>
+                    <h2>{project.title}</h2>
+                  </Link>
+                  <p>{project.year}</p>
+                  <div>
+                    {project.stacks.map((stack) => (
+                      <a href={stack.url} key={stack.id}>
+                        {stack.name}
+                      </a>
+                    ))}
+                  </div>
+                  <div>
+                    {project.links.map((link) => (
+                      <a href={link.url} key={link.id}>
+                        {link.type}
+                      </a>
+                    ))}
+                  </div>
+                  <img src={project.image.url} alt={project.image.filename} />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </Layout>
@@ -250,7 +280,15 @@ Admin.getInitialProps = async ({
     query: getStacksQuery,
   });
 
-  return { stacks: stacks.data.getStacks };
+  const projects = await apolloClient.query<
+    GetProjectsQuery,
+    GetProjectsQueryVariables
+  >({
+    query: getProjectsQuery,
+  });
+  console.log(projects);
+
+  return { stacks: stacks.data.getStacks, projects: projects.data.getProjects };
 };
 
 export default Admin;
