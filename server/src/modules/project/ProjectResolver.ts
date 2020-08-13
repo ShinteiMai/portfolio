@@ -66,12 +66,6 @@ export class ProjectResolver {
       if (project) {
         const links = await project.links();
 
-        await Image.createQueryBuilder()
-          .delete()
-          .from(Image)
-          .where("id = :id", { id: project.image })
-          .execute();
-
         for await (let link of links) {
           await link.remove();
         }

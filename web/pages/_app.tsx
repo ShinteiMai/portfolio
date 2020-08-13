@@ -2,10 +2,10 @@ import App from "next/app";
 import React from "react";
 import { ApolloProvider } from "react-apollo";
 import withApollo from "../lib/withApollo";
-import "../styles/index.css";
-import { createGlobalStyle } from "styled-components";
+import { ThemeProvider, CSSReset } from "@chakra-ui/core";
+// import { createGlobalStyle } from "styled-components";
 
-const GlobalStyle = createGlobalStyle`
+/* const GlobalStyle = createGlobalStyle`
   * {
     margin: 0;
     padding: 0;
@@ -29,16 +29,18 @@ const GlobalStyle = createGlobalStyle`
     background-color: #173248;
     color: #fff5e7;
   }
-`;
+  `;*/
 
 class MyApp extends App<any> {
   render() {
     const { Component, pageProps, apolloClient } = this.props;
     return (
-      <ApolloProvider client={apolloClient}>
-        <GlobalStyle />
-        <Component {...pageProps} />
-      </ApolloProvider>
+      <ThemeProvider>
+        <ApolloProvider client={apolloClient}>
+          <CSSReset />
+          <Component {...pageProps} />
+        </ApolloProvider>
+      </ThemeProvider>
     );
   }
 }

@@ -6,10 +6,27 @@ import {
   GetProjectQuery,
   GetProjectQueryVariables,
   Project,
+  DeleteProjectComponent,
+  DeleteImageComponent,
 } from "../../generated/apolloComponents";
 import { meQuery } from "../../graphql/user/queries/me";
 import redirect from "../../lib/redirect";
 import { getProject } from "../../graphql/user/queries/getProject";
+import {
+  Text,
+  Flex,
+  List,
+  ListItem,
+  Link,
+  Icon,
+  Box,
+  Image,
+  Button,
+  ButtonGroup,
+} from "@chakra-ui/core";
+import { GoTrashcan } from "react-icons/go";
+import { GrUpdate } from "react-icons/gr";
+import { default as NextLink } from "next/link";
 
 type Props = {
   project: Project;
@@ -18,34 +35,90 @@ type Props = {
 const ProjectComponent = ({ project }: Props) => {
   return (
     <Layout>
-      <div>
-        <h1>{project.title}</h1>
-        <h3>{project.year}</h3>
-        <div>
-          <h3>Stacks</h3>
-          <ul>
-            {project.stacks.map((stack) => (
-              <li key={stack.id}>
-                <a href={stack.url}>{stack.name}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h3>Links</h3>
-          <ul>
-            {project.links.map((link) => (
-              <li key={link.id}>
-                <a href={link.url}>{link.type}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <img src={project.image.url} alt={project.image.filename} />
-        </div>
-        <div />
-      </div>
+      <Box>
+        <Box w="75%" mx="auto" my={4}>
+          <Image src={project.image.url} alt={project.image.filename} />
+        </Box>
+
+        <Box w="75%" mx="auto">
+          <Text fontSize={["2xl", "4xl"]}>{project.title}</Text>
+          <Text fontSize={["1xl", "2xl"]}>{project.year}</Text>
+          <Flex flexDirection="column" my={6}>
+            <Text fontSize="2xl">Stacks</Text>
+            <List spacing={2}>
+              {project.stacks.map((stack) => {
+                return (
+                  <ListItem key={stack.id}>
+                    <Link href={stack.url} isExternal>
+                      <Icon name="external-link" mx="4px" />
+                      {stack.name}
+                    </Link>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Flex>
+          <Flex flexDirection="column" my={6}>
+            <Text fontSize="2xl">Links</Text>
+            <List spacing={2}>
+              {project.links.map((link) => (
+                <ListItem key={link.id}>
+                  <Link href={link.url} isExternal>
+                    <Icon name="external-link" mx="4px" />
+                    {link.type}
+                  </Link>
+                </ListItem>
+              ))}
+            </List>
+          </Flex>
+          <ButtonGroup spacing={4} my={8}>
+            <Button leftIcon={GrUpdate} variantColor="teal">
+              Update Project
+            </Button>
+
+            <DeleteProjectComponent>
+              {(deleteProject) => (
+                <DeleteImageComponent>
+                  {(deleteImage) => (
+                    <Button
+                      leftIcon={GoTrashcan}
+                      variantColor="pink"
+                      onClick={async () => {
+                        try {
+                          const imageResponse = await deleteImage({
+                            variables: {
+                              id: project.image.id,
+                            },
+                          });
+                          if (imageResponse.data) {
+                            const projectResponse = await deleteProject({
+                              variables: {
+                                id: project.id,
+                              },
+                            });
+                            console.log(projectResponse);
+                          }
+                        } catch (err) {
+                          console.log(err);
+                        }
+                      }}
+                    >
+                      Delete Project
+                    </Button>
+                  )}
+                </DeleteImageComponent>
+              )}
+            </DeleteProjectComponent>
+          </ButtonGroup>
+          <Box>
+            <Button variantColor="yellow">
+              <NextLink href="/admin">
+                <Link>Go Back</Link>
+              </NextLink>
+            </Button>
+          </Box>
+        </Box>
+      </Box>
     </Layout>
   );
 };
