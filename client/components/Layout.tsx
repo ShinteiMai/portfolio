@@ -1,41 +1,42 @@
 import React, { ReactNode } from "react";
-import Link from "next/link";
+import { default as NextLink } from "next/link";
 import Head from "next/head";
+import { Box, Link } from "@chakra-ui/core";
 
 type Props = {
   children?: ReactNode;
   title?: string;
 };
 
-const Layout = ({ children, title = "This is the default title" }: Props) => (
-  <div>
+const Layout = ({ children, title = "Steven Hansel" }: Props) => (
+  <Box>
     <Head>
       <title>{title}</title>
       <meta charSet="utf-8" />
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
     </Head>
-    <header>
-      <nav>
-        <Link href="/">
-          <a>Home</a>
-        </Link>{" "}
-        |{" "}
-        <Link href="/about">
-          <a>About</a>
-        </Link>{" "}
-        |{" "}
-        <Link href="/users">
-          <a>Users List</a>
-        </Link>{" "}
-        | <a href="/api/users">Users API</a>
-      </nav>
-    </header>
-    {children}
-    <footer>
-      <hr />
-      <span>I'm here to stay (Footer)</span>
-    </footer>
-  </div>
+    <Box display="flex" justifyContent="space-between" marginTop={6}>
+      <Box marginLeft={12}>Site Icon</Box>
+      <Box marginRight={12}>
+        <NextLink href="/">
+          <Link marginRight={5}>About</Link>
+        </NextLink>
+        <NextLink href="/">
+          <Link marginRight={5}>Timeline</Link>
+        </NextLink>
+        <NextLink href="/">
+          <Link marginRight={5}>Contact</Link>
+        </NextLink>
+        <NextLink href="/">
+          <Link>Projects</Link>
+        </NextLink>
+      </Box>
+    </Box>
+
+    <Box width={["80%", "70%"]} marginX="auto" marginY={[16, 24]}>
+      {children}
+    </Box>
+  </Box>
 );
 
 export default Layout;
