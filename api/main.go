@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/database"
 	"log"
 
 	"github.com/gofiber/cors"
@@ -27,5 +28,8 @@ func Initialize() {
 }
 
 func main() {
+	if err := database.Connect(); err != nil {
+		log.Fatal(err)
+	}
 	Initialize()
 }
